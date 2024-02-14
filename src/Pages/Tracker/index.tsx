@@ -44,7 +44,7 @@ export default ({setAppOpen}: { setAppOpen: any }) => {
     const {run: getTvRecords, loading} = useRequest(requestTvRecords, {
         manual: true,
         onSuccess: (data) => {
-            setShowData(data.data.records as RecordType)
+            setShowData(data.data.records as Records)
         }
     })
     return (<>
