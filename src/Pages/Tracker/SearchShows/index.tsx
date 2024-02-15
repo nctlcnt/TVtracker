@@ -1,102 +1,45 @@
-import axios from 'axios';
-import {useRequest} from "ahooks";
-import {createRecordsUrl, searchProviders, searchTvShows} from "@/common/apis.ts";
-import React, {useState} from "react";
-import {IconButton, List, ListItem, ListItemText} from "@mui/material";
+import {
+    Button,
+    IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, Paper,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import {MinimizeRounded} from "@mui/icons-material";
-import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {ShowDetailType, TMDBResults} from "@/common/tmdbTypes";
-import {RecordType} from "@/common/airtableTypes";
+import {CheckRounded, ManageSearchRounded} from '@mui/icons-material';
+import useSearchShowsService from "@/Pages/Tracker/SearchShows/useSearchShowsService.ts";
 
-
-export default () => {
-    const [result, setResult] = useState<TMDBResults>([] as TMDBResults)
-    const {tokens} = React.useContext(GlobalContext)
-    const {TMDBToken, airtableToken, airtableBaseId} = tokens
-    const addShowUrl = createRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'show_database')
-    const getTvShows = (queryString: string) => {
-        return axios.get(searchTvShows, {
-            params: {
-                query: queryString,
-                language: 'zh-CN',
-            },
-            headers: {
-                Authorization: `Bearer ${TMDBToken}`
-            }
-        })
-    }
-    const {run: searchTvShow, loading} = useRequest(getTvShows, {
-        manual: true,
-        onSuccess: (result) => {
-            console.log('result', result.data.results)
-            setResult(result.data.results)
-        }
-    })
-
-    const search = () => {
-        const searchString = document.getElementById('searchString') as HTMLInputElement
-        searchTvShow(searchString.value)
-    }
-
-    const postShow = (item: ShowDetailType) => {
-        return axios.post(addShowUrl, {
-            records: [
-                {
-                    fields: {
-                        ID: item.id,
-                        ShowTitle: `${item.name} (${item.original_name})`,
-                        FirstAired: item.first_air_date,
-                    }
-                }
-            ]
-        } as { records: Pick<RecordType, 'fields'>[] }, {
-            headers: {
-                Authorization: `Bearer ${airtableToken}`
-            }
-        })
-    }
-
-
-    const {run: addShow} = useRequest(postShow, {
-        manual: true,
-        onSuccess: (data) => {
-            console.log('addShow success', data)
-        }
-    })
-
-    const getProviders = (id: string) => {
-        const searchProvidersUrl: string = searchProviders.replace('{series_id}', id)
-        return axios.get(searchProvidersUrl, {
-            headers: {
-                Authorization: `Bearer ${TMDBToken}`
-            }
-        })
-    }
-
-    const {run: searchSteamProviders} = useRequest(getProviders, {
-        manual: true,
-        onSuccess: (data) => {
-            console.log('searchProviders', data)
-        }
-
-    })
+export default function () {
+    const {loading, search, result, addShow, searchStreamProviders, addingShow, addedShows} = useSearchShowsService()
 
     return (
         <div>
-            <input className={'border-2'} id={'searchString'}/>
-            <button onClick={search}>Search</button>
-            {loading && <p>loading...</p>}
+            <Paper sx={{display: 'flex', p: 1}}>
+                <InputBase sx={{flex: 1}} id="searchString"/>
+                <Button onClick={search}>Search</Button>
+            </Paper>
+            {(loading || addingShow) && <p>loading...</p>}
             <List>
-                {result.map((item: any) =>
-                    <ListItem key={item.id}
-                              secondaryAction={<><IconButton
-                                  onClick={() => addShow(item)}><AddIcon/></IconButton><IconButton
-                                  onClick={() => searchSteamProviders(item.id)}><MinimizeRounded/></IconButton></>}>
+                {result.map((item: any) => (
+                    <ListItem
+                        key={item.id}
+                    >
+                        <ListItemIcon>
+                            <IconButton
+                                title={'Add Show'}
+                                onClick={() => addShow(item)}
+                                disabled={addedShows.includes(item.id)}
+                            >
+                                {addedShows.includes(item.id) ? <CheckRounded color={'success'}/> : <AddIcon/>}
+                            </IconButton>
+                            <IconButton
+                                onClick={() => searchStreamProviders(item.id)}
+                                title={'Search Providers'}
+                            >
+                                <ManageSearchRounded/>
+                            </IconButton>
+                        </ListItemIcon>
                         <ListItemText primary={item.name} secondary={item.overview}/>
-                    </ListItem>)
-                }
+                    </ListItem>
+                ))}
             </List>
         </div>
-    )
+    );
 }
