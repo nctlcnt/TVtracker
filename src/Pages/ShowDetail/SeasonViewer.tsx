@@ -95,11 +95,11 @@ export default ({seasonId, setSeasonId, showId, showDetail}: {
             <Button onClick={() => setSeasonId && setSeasonId(0)} variant={'outlined'}>Close</Button>
             {seasonDetail && <p>{seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})</p>}
             {/*<Button onClick={getSeason}>getSeasonDetails</Button>*/}
-            <Grid container={true} spacing={1}>
+            <Grid container={true} spacing={1} columns={{xs:2, md:4}}>
                 {
                     seasonDetail && seasonDetail.episodes.map((episode) => {
-                        return <Grid item={true} key={episode.id} sx={{width: '20%'}}>
-                            <Card sx={{minWidth: '100px'}}>
+                        return <Grid item={true} key={episode.id} >
+                            <Card sx={{width:'100%'}}>
                                 <CardContent>
                                     <Typography sx={{fontSize: '14px'}} color={'gray'}>{episode.episode_number}</Typography>
                                     <Typography variant={'h6'}>{episode.name}</Typography>

@@ -5,7 +5,7 @@ import {useRequest} from "ahooks";
 import {ShowDetailType} from "@/common/tmdbTypes";
 import React, {useEffect} from "react";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {Avatar, Box, Button, Drawer, List, ListItem, ListItemText, Stack} from "@mui/material";
+import {Avatar, Box, Button, Divider, Drawer, List, ListItem, ListItemText, Stack} from "@mui/material";
 import SeasonViewer from "@/Pages/ShowDetail/SeasonViewer.tsx";
 
 export default () => {
@@ -45,13 +45,14 @@ export default () => {
             showDetail && <div>
                 <h1>{showDetail.name} ({showDetail.original_name})</h1>
                 <h2>{id}</h2>
-                <Stack direction={'row'}>
+                <Stack direction={{xs: 'column', sm: 'row'}}>
                     <Avatar src={`https://image.tmdb.org/t/p/w500${showDetail.poster_path}`} alt={showDetail.name}
                             variant={'rounded'} sx={{
                         width: 200,
                         height: 200
                     }}/>
-                    <Box ml={2} textAlign={'left'}>
+                    <Divider sx={{m: 1}}/>
+                    <Box textAlign={'left'}>
                         <p>First Air Date: {showDetail.first_air_date}</p>
                         <p>{showDetail.overview}</p>
                     </Box>
