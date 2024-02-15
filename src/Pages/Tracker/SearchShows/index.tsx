@@ -1,31 +1,18 @@
 import axios from 'axios';
 import {useRequest} from "ahooks";
 import {createRecordsUrl, searchProviders, searchTvShows} from "@/common/apis.ts";
-import {useState} from "react";
+import React, {useState} from "react";
 import {IconButton, List, ListItem, ListItemText} from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
-import useGlobalContext from "@/globalContext/useGlobalContext.ts";
-import {RecordType} from "@/Pages/Tracker";
 import {MinimizeRounded} from "@mui/icons-material";
+import GlobalContext from "@/globalContext/GlobalContext.ts";
+import {ShowDetailType, TMDBResults} from "@/common/tmdbTypes";
+import {RecordType} from "@/common/airtableTypes";
 
-type ResultType = {
-    adult: boolean,
-    backdrop_path: string,
-    id: number,
-    original_language: string,
-    original_name: string,
-    overview: string,
-    popularity: number,
-    poster_path: string,
-    first_air_date: string,
-    name: string,
-    vote_average: number,
-    vote_count: number
-}
-type TMDBResults = Array<ResultType>
+
 export default () => {
     const [result, setResult] = useState<TMDBResults>([] as TMDBResults)
-    const {tokens} = useGlobalContext()
+    const {tokens} = React.useContext(GlobalContext)
     const {TMDBToken, airtableToken, airtableBaseId} = tokens
     const addShowUrl = createRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'show_database')
     const getTvShows = (queryString: string) => {
@@ -35,7 +22,7 @@ export default () => {
                 language: 'zh-CN',
             },
             headers: {
-                Authorization: `Bearer ${document.cookie.match(/TMDBToken=([^;]+)/)?.[1]}`
+                Authorization: `Bearer ${TMDBToken}`
             }
         })
     }
@@ -52,7 +39,7 @@ export default () => {
         searchTvShow(searchString.value)
     }
 
-    const postShow = (item: ResultType) => {
+    const postShow = (item: ShowDetailType) => {
         return axios.post(addShowUrl, {
             records: [
                 {

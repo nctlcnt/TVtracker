@@ -1,20 +1,17 @@
-import useGlobalContext from "@/globalContext/useGlobalContext.ts";
 import {Button} from "@mui/material";
+import {Link} from "react-router-dom";
+import GlobalContext from "@/globalContext/GlobalContext.ts";
+import React from "react";
 
-export default ({setAppOpen}: { setAppOpen: any }) => {
-    const {tokens, setTokens} = useGlobalContext()
+export default () => {
+    const {tokens,readCookies} = React.useContext(GlobalContext)
     const {TMDBToken, airtableToken, airtableBaseId} = tokens
-    const checkTokenFromCookies = () => {
-        const airtableToken = (document.cookie.match(/airtableToken=([^;]+)/)?.[1] || '')
-        const TMDBToken = (document.cookie.match(/TMDBToken=([^;]+)/)?.[1] || '')
-        const airtableBaseId = (document.cookie.match(/airtableBaseId=([^;]+)/)?.[1] || '')
-        setTokens({TMDBToken, airtableToken, airtableBaseId})
-    }
+
     const saveToCookies = (item: string) => {
         // @ts-ignore
         document.cookie = `${item}=${document.getElementById(`${item}`)?.value || ''}`
         console.log('saveToCookies', item)
-        checkTokenFromCookies()
+        readCookies()
     }
 
     return <>
@@ -41,14 +38,16 @@ export default ({setAppOpen}: { setAppOpen: any }) => {
                 </Button>
             </div>
         </div>
-        <Button className={'mt-3'} onClick={checkTokenFromCookies}>Check Token From Cookies</Button>
+        <Button className={'mt-3'} onClick={readCookies}>Check Token From Cookies</Button>
         {TMDBToken && airtableToken && airtableBaseId && <div className={'text-left'}>
             <p style={{overflowWrap: 'anywhere'}}><span className={'font-bold'}>TMDBToken:</span> {TMDBToken}</p>
             <p style={{overflowWrap: 'anywhere'}}><span className={'font-bold'}>airtableToken:</span> {airtableToken}
             </p>
             <p style={{overflowWrap: 'anywhere'}}><span className={'font-bold'}>airtableBaseId:</span> {airtableBaseId}
             </p>
-            <Button onClick={() => setAppOpen(true)}>open</Button>
+            <Link to={'/tracker'}>Go to Tracker</Link>
+            <Link to={'/list'}>Go to List</Link>
+            {/*<Button onClick={() => setAppOpen(true)}>open</Button>*/}
         </div>}
     </>
 }

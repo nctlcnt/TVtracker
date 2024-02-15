@@ -1,23 +1,14 @@
 import './App.css'
-import SaveInitInformation from "@/Pages/SaveInitInformation";
-import {useState} from "react";
-import Tracker from "@/Pages/Tracker";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
 import useGlobalContext from "@/globalContext/useGlobalContext.ts";
+import Routes from "@/common/Routes.tsx";
+
 
 function App() {
-    const [, setOpen] = useState(false)
     const value = useGlobalContext()
-    return (<GlobalContext.Provider value={value}>
-            <div >
-                <Tracker setAppOpen={setOpen}/>
-            </div>
-            <div >
-                <SaveInitInformation setAppOpen={setOpen}/>
-            </div>
-        </GlobalContext.Provider>
-
-    )
+    return <GlobalContext.Provider value={value}>
+        <Routes/>
+    </GlobalContext.Provider>
 }
 
 export default App
