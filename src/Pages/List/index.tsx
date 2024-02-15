@@ -4,9 +4,8 @@ import {useRequest} from "ahooks";
 import React from "react";
 import {Button} from "@mui/material";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {DataGrid, GridActionsCellItem} from "@mui/x-data-grid";
-import {SaveAltOutlined} from "@mui/icons-material";
-import {Link, useNavigate} from "react-router-dom";
+import {DataGrid} from "@mui/x-data-grid";
+import {Link} from "react-router-dom";
 import {Records} from "@/common/airtableTypes";
 
 export default () => {
@@ -33,44 +32,27 @@ export default () => {
     })
 
 
-    const navigate = useNavigate()
-
     return <div>
         <Link to={'/'}>Go Back</Link>
         {loading && <p>loading...</p>}
         <Button onClick={getTvRecords}>getTvRecords</Button>
         <DataGrid autoHeight={true} rows={showData} columns={[
             {
-                field: 'ID', headerName: 'ID', valueGetter: (params) => {
-                    return params.row.fields.ID
-                }
-            },
-            {
                 field: 'Title', headerName: 'Title',
                 renderCell: (params) => {
                     return <Link to={`/show/${params.row.fields.ID}`}>{params.row.fields.Title}</Link>
-                }
+                }, width: 250
             },
             {
                 field: 'status', headerName: 'Status', valueGetter: (params) => {
                     return params.row.fields.status
-                }
+                }, width: 150,
             },
             {
                 field: 'Progress', headerName: 'Progress', valueGetter: (params) => {
                     return params.row.fields.Progress
-                }
+                }, width: 150,
             },
-            {
-                field: 'actions',
-                type: 'actions',
-                // getActions: (params) => [<GridActionsCellItem
-                //     onClick={() => getShowDetails(String(params.row.fields.ID))}
-                //     icon={<SaveAltOutlined/>} label={'save'}/>]
-                getActions: (params) => [<GridActionsCellItem
-                    onClick={() => navigate(`/show/${params.row.fields.ID}`)}
-                    icon={<SaveAltOutlined/>} label={'save'}/>]
-            }
         ]}/>
     </div>
 }

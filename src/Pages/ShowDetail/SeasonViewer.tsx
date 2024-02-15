@@ -1,9 +1,10 @@
 import {
+    Backdrop,
     Box,
     Button,
     Card, CardActions,
-    CardContent,
-    Grid,
+    CardContent, CircularProgress,
+    Grid, Snackbar,
     Typography
 } from "@mui/material";
 import React, {Dispatch, useEffect} from "react";
@@ -14,6 +15,7 @@ import {useRequest} from "ahooks";
 import {EpisodeType, SeasonDetailType, ShowDetailType} from "@/common/tmdbTypes";
 import {EpisodeRecordType} from "@/common/airtableTypes";
 import {isBefore} from "date-fns";
+import {CheckRounded} from "@mui/icons-material";
 
 export default ({seasonId, setSeasonId, showId, showDetail}: {
     seasonId?: number,
@@ -26,7 +28,10 @@ export default ({seasonId, setSeasonId, showId, showDetail}: {
     const requestSeasonUrl = getSeasonDetails.replace('{series_id}', showId || '').replace('{season_number}', String(seasonId))
     const {airtableToken, airtableBaseId} = tokens
     const addShowUrl = createRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'episode_tracker')
+    const [addingShowId, setAddingShowId] = React.useState<number | null>(null)
 
+    const [addedShowIds, setAddedShowIds] = React.useState<number[]>([])
+    const [error, setError] = React.useState<string | null>(null)
     const [seasonDetail, setSeasonDetail] = React.useState<SeasonDetailType | null>(null)
     const requestSeasonDetails = async () => {
         return axios.get(requestSeasonUrl, {
@@ -78,11 +83,19 @@ export default ({seasonId, setSeasonId, showId, showDetail}: {
         manual: true,
         onSuccess: (data) => {
             console.log('addShow success', data)
+            setAddedShowIds([...addedShowIds, addingShowId as number])
+            setAddingShowId(null)
+        },
+        onError: (error) => {
+            console.error('addShow error', error)
+            setAddingShowId(null)
+            setError(error.message)
         }
     })
 
     const checkIn = (episode: EpisodeType) => {
         addShow(episode)
+        setAddingShowId(episode.id)
     }
 
     useEffect(() => {
@@ -92,30 +105,34 @@ export default ({seasonId, setSeasonId, showId, showDetail}: {
 
     return (
         <Box p={2}>
+            <Backdrop open={addingShowId !== null} sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}><CircularProgress/></Backdrop>
             <Button onClick={() => setSeasonId && setSeasonId(0)} variant={'outlined'}>Close</Button>
             {seasonDetail && <p>{seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})</p>}
             {/*<Button onClick={getSeason}>getSeasonDetails</Button>*/}
-            <Grid container={true} spacing={1}>
+            <Grid container={true} spacing={1} columns={{xs: 2, md: 4}}>
                 {
                     seasonDetail && seasonDetail.episodes.map((episode) => {
-                        return <Grid item={true} key={episode.id} sx={{width: '20%'}}>
-                            <Card sx={{minWidth: '100px'}}>
+                        return <Grid item={true} key={episode.id}>
+                            <Card sx={{width: '100%'}}>
                                 <CardContent>
                                     <Typography sx={{fontSize: '14px'}} color={'gray'}>{episode.episode_number}</Typography>
                                     <Typography variant={'h6'}>{episode.name}</Typography>
                                     <Typography variant={'body2'}>{episode.air_date}</Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button onClick={() => checkIn(episode)}
-                                            disabled={isBefore(new Date(), new Date(episode.air_date))}>
-                                        Check-in
-                                    </Button>
+                                    {addedShowIds.includes(episode.id) ? <CheckRounded color={'success'}/> :
+                                        <Button onClick={() => checkIn(episode)}
+                                                disabled={isBefore(new Date(), new Date(episode.air_date))}>
+                                            Check-in
+                                        </Button>}
                                 </CardActions>
                             </Card>
                         </Grid>
                     })
                 }
             </Grid>
+            <Snackbar open={!!error} message={error} autoHideDuration={6000}
+                      anchorOrigin={{vertical: 'top', horizontal: 'left'}} onClose={() => setError(null)}/>
         </Box>
     )
 }
