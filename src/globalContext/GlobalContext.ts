@@ -1,16 +1,6 @@
-import {createContext, Dispatch} from "react";
+import {createContext} from "react";
+import {GlobalContextType} from "@/common/types";
 
-export type TokensType = {
-    TMDBToken: string,
-    airtableToken: string,
-    airtableBaseId: string
-}
-
-export type GlobalContextType = {
-    tokens: TokensType,
-    setTokens: Dispatch<TokensType>
-    readCookies: () => void
-}
 
 const MyContext = createContext({} as GlobalContextType)
 export default MyContext
