@@ -46,8 +46,19 @@ export default () => {
                 }
             },
             {
-                field: 'Title', headerName: 'Title', valueGetter: (params) => {
-                    return params.row.fields.Title
+                field: 'Title', headerName: 'Title',
+                renderCell: (params) => {
+                    return <Link to={`/show/${params.row.fields.ID}`}>{params.row.fields.Title}</Link>
+                }
+            },
+            {
+                field: 'status', headerName: 'Status', valueGetter: (params) => {
+                    return params.row.fields.status
+                }
+            },
+            {
+                field: 'Progress', headerName: 'Progress', valueGetter: (params) => {
+                    return params.row.fields.Progress
                 }
             },
             {
@@ -57,7 +68,7 @@ export default () => {
                 //     onClick={() => getShowDetails(String(params.row.fields.ID))}
                 //     icon={<SaveAltOutlined/>} label={'save'}/>]
                 getActions: (params) => [<GridActionsCellItem
-                    onClick={()=>navigate(`/show/${params.row.fields.ID}`)}
+                    onClick={() => navigate(`/show/${params.row.fields.ID}`)}
                     icon={<SaveAltOutlined/>} label={'save'}/>]
             }
         ]}/>

@@ -2,7 +2,7 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
-import SaveInitInformation from "@/Pages/SaveInitInformation";
+import SaveInitInformation from "src/Pages/InitComponent";
 import Tracker from "@/Pages/Tracker";
 import List from "@/Pages/List";
 import ShowDetail from "@/Pages/ShowDetail";

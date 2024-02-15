@@ -1,12 +1,19 @@
-import {Button, IconButton, List, ListItem, ListItemText} from "@mui/material";
-import React, {Dispatch} from "react";
+import {
+    Box,
+    Button,
+    Card, CardActions,
+    CardContent,
+    Grid,
+    Typography
+} from "@mui/material";
+import React, {Dispatch, useEffect} from "react";
 import {createRecordsUrl, getSeasonDetails} from "@/common/apis.ts";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
 import axios from "axios";
 import {useRequest} from "ahooks";
 import {EpisodeType, SeasonDetailType, ShowDetailType} from "@/common/tmdbTypes";
-import {AddTaskRounded} from "@mui/icons-material";
 import {EpisodeRecordType} from "@/common/airtableTypes";
+import {isBefore} from "date-fns";
 
 export default ({seasonId, setSeasonId, showId, showDetail}: {
     seasonId?: number,
@@ -78,21 +85,37 @@ export default ({seasonId, setSeasonId, showId, showDetail}: {
         addShow(episode)
     }
 
+    useEffect(() => {
+        console.log('seasonId', seasonId)
+        getSeason()
+    }, []);
 
     return (
-        <div>
-            <p>{seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})</p>
-            <Button onClick={getSeason}>getSeasonDetails</Button>
-            <List>
-                {seasonDetail && seasonDetail.episodes.map((episode) => {
-                    return <ListItem key={episode.id} secondaryAction={<IconButton
-                        onClick={() => checkIn(episode)}><AddTaskRounded/></IconButton>}>
-                        <ListItemText primary={episode.episode_number} secondary={episode.name+episode.air_date}/>
-                    </ListItem>
-
-                })}
-            </List>
-            <Button onClick={() => setSeasonId && setSeasonId(0)}>Close</Button>
-        </div>
+        <Box p={2}>
+            <Button onClick={() => setSeasonId && setSeasonId(0)} variant={'outlined'}>Close</Button>
+            {seasonDetail && <p>{seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})</p>}
+            {/*<Button onClick={getSeason}>getSeasonDetails</Button>*/}
+            <Grid container={true} spacing={1}>
+                {
+                    seasonDetail && seasonDetail.episodes.map((episode) => {
+                        return <Grid item={true} key={episode.id} sx={{width: '20%'}}>
+                            <Card sx={{minWidth: '100px'}}>
+                                <CardContent>
+                                    <Typography sx={{fontSize: '14px'}} color={'gray'}>{episode.episode_number}</Typography>
+                                    <Typography variant={'h6'}>{episode.name}</Typography>
+                                    <Typography variant={'body2'}>{episode.air_date}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button onClick={() => checkIn(episode)}
+                                            disabled={isBefore(new Date(), new Date(episode.air_date))}>
+                                        Check-in
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    })
+                }
+            </Grid>
+        </Box>
     )
 }

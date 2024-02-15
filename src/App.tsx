@@ -3,11 +3,10 @@ import GlobalContext from "@/globalContext/GlobalContext.ts";
 import useGlobalContext from "@/globalContext/useGlobalContext.ts";
 import Routes from "@/common/Routes.tsx";
 
-
 function App() {
     const value = useGlobalContext()
     return <GlobalContext.Provider value={value}>
-        <Routes/>
+            <Routes/>
     </GlobalContext.Provider>
 }
 

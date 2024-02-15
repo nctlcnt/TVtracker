@@ -5,7 +5,7 @@ import {useRequest} from "ahooks";
 import {ShowDetailType} from "@/common/tmdbTypes";
 import React, {useEffect} from "react";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {Button, Dialog, List, ListItem, ListItemText} from "@mui/material";
+import {Avatar, Box, Button, Drawer, List, ListItem, ListItemText, Stack} from "@mui/material";
 import SeasonViewer from "@/Pages/ShowDetail/SeasonViewer.tsx";
 
 export default () => {
@@ -40,14 +40,22 @@ export default () => {
         getShowDetails()
     }, [id]);
     return <div>
-        <Link to={'..'}>Go Back</Link>
+        <Link to={'/list'}>Go Back</Link>
         {
             showDetail && <div>
                 <h1>{showDetail.name} ({showDetail.original_name})</h1>
                 <h2>{id}</h2>
-                <p>{showDetail.overview}</p>
-                <img src={`https://image.tmdb.org/t/p/w500${showDetail.poster_path}`} alt={showDetail.name}/>
-                <p>First Air Date: {showDetail.first_air_date}</p>
+                <Stack direction={'row'}>
+                    <Avatar src={`https://image.tmdb.org/t/p/w500${showDetail.poster_path}`} alt={showDetail.name}
+                            variant={'rounded'} sx={{
+                        width: 200,
+                        height: 200
+                    }}/>
+                    <Box ml={2} textAlign={'left'}>
+                        <p>First Air Date: {showDetail.first_air_date}</p>
+                        <p>{showDetail.overview}</p>
+                    </Box>
+                </Stack>
                 <List>
                     {showDetail.seasons.map((season) => {
                         return <ListItem key={season.id}>
@@ -58,9 +66,9 @@ export default () => {
                 </List>
             </div>
         }
-        <Dialog open={!!seasonId}>
+        <Drawer open={!!seasonId} anchor={"bottom"} sx={{'.MuiPaper-root.MuiDrawer-paper': {maxHeight: '60%'}}}>
             <SeasonViewer seasonId={seasonId || 0} setSeasonId={setSeasonId} showId={id} showDetail={showDetail}/>
-        </Dialog>
+        </Drawer>
     </div>
 
 }
