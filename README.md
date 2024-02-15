@@ -1,30 +1,14 @@
-# React + TypeScript + Vite
+# TV Tracker for Personal Use
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> API used: 
+>
+> [The Movie Database (TMDb)](https://www.themoviedb.org/documentation/api)
+> 
+> [Airtable](https://airtable.com/api)
 
-Currently, two official plugins are available:
+Due to the complex nature of the request body in iOS shortcuts, I have created a custom interface to handle requests and send them to TMDb and Airtable.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Some Side Notes
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- [important] The app is designed for personal use, so it's not user-friendly.
+- Some features can be used even without exactly same table settings in Airtable as mine: search TV shows, ... more to be added
