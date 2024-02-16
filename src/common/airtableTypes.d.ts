@@ -12,8 +12,10 @@ export type RecordType = {
         ProgressSeason: number,
         ProgressEpisode: number,
         Progress: string,
-        Title: string[],
+        Title: string,
         Created: string // date type,
+        poster: string,
+        overview: string,
     },
     createdTime: string
 }
