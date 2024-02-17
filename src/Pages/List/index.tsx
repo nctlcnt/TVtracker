@@ -1,34 +1,28 @@
-import {getRecordsUrl} from "@/common/apis.ts";
-import axios from "axios";
-import {useRequest} from "ahooks";
-import React from "react";
-import {Box, Button, Chip, Divider, Stack} from "@mui/material";
+import React, {useEffect} from "react";
+import {Backdrop, Box, Button, Chip, CircularProgress, Divider, Stack} from "@mui/material";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {Link} from "react-router-dom";
+import {Link, redirect} from "react-router-dom";
 import {Records, RecordType} from "@/common/airtableTypes";
 import ShowListItem from "@/Pages/List/ShowListItem.tsx";
+import useRequestHooks from "@/common/useRequestHooks.ts";
 
 export default () => {
-    const {tokens, showData, setShowData} = React.useContext(GlobalContext)
-    const {airtableToken, airtableBaseId} = tokens
-
-    const requestUrl = getRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'show_database')
-    const requestTvRecords = async () => {
-        return axios.get(requestUrl, {
-                params: {view: 'All'},
-                headers: {
-                    Authorization: `Bearer ${airtableToken}`
-                },
-            }
-        )
-    }
-
-    const {run: getTvRecords, loading} = useRequest(requestTvRecords, {
-        manual: true,
-        onSuccess: (data) => {
+    const {tokens, showData, readCookies, setShowData} = React.useContext(GlobalContext)
+    const {airtableToken, airtableBaseId, TMDBToken} = tokens
+    const {getAirtableRecords, gettingAirtableRecords} = useRequestHooks({
+        requestAirtableCb: (data: any) => {
             setShowData(data.data.records as Records)
         }
     })
+
+
+    useEffect(() => {
+        readCookies()
+        if (!airtableToken || !airtableBaseId || !TMDBToken) {
+            redirect('/')
+        }
+    }, []);
+
 
     const statusChips = ['Watching', 'Watched', 'InList', 'Dropped', 'Paused']
     const [filterChips, setFilterChips] = React.useState<string[]>(['Watching', 'InList',])
@@ -36,7 +30,12 @@ export default () => {
 
     return <div>
         <Link to={'/'}>Go Back</Link>
-        {loading && <p>loading...</p>}
+        <Backdrop
+            sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
+            open={gettingAirtableRecords}
+        >
+            <CircularProgress color="inherit"/>
+        </Backdrop>
         <Box flexDirection={'row'} display={'flex'}>
             <Stack spacing={1} direction={'row'}>
                 {
@@ -53,7 +52,7 @@ export default () => {
                 {filterChips.map((chip) => {
                     return <Chip size={'small'} key={chip} label={chip} color={'primary'} onClick={() => {
                         if (filterChips.includes(chip)) {
-                            if(filterChips.length === 1) {
+                            if (filterChips.length === 1) {
                                 return
                             }
                             setFilterChips(filterChips.filter((item) => item !== chip))
@@ -66,7 +65,9 @@ export default () => {
             </Stack>
         </Box>
 
-        <Button onClick={getTvRecords} variant={'outlined'} sx={{m:1}}>refresh</Button>
+        <Button onClick={() => {
+            getAirtableRecords('show_database')
+        }} variant={'outlined'} sx={{m: 1}}>refresh</Button>
 
         <Stack spacing={1}>
             {

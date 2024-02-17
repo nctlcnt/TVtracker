@@ -6,6 +6,7 @@ import SaveInitInformation from "src/Pages/InitComponent";
 import Tracker from "@/Pages/Tracker";
 import List from "@/Pages/List";
 import ShowDetail from "@/Pages/ShowDetail";
+import HistoryList from "@/Pages/HistoryList";
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
         path: "show/:id",
         element: <ShowDetail/>,
     },
+    {
+        path: "history",
+        element: <HistoryList/>
+    }
 ]);
 export default () =>
     <RouterProvider router={router}/>
