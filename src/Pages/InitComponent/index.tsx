@@ -68,12 +68,15 @@ const InitComponent = function () {
                     TMDBToken && airtableToken && airtableBaseId
                     && (
                         <Stack>
-                      <span>
-                        <Link to="/tracker">Go to Tracker</Link>
-                      </span>
+                          <span>
+                            <Link to="/tracker">Go to Tracker</Link>
+                          </span>
                             <span>
-                        <Link to="/list">Go to List</Link>
-                      </span>
+                            <Link to="/list">Go to List</Link>
+                        </span>
+                            <span>
+                            <Link to="/history">Go to History</Link>
+                        </span>
                         </Stack>
                     )
                 }

@@ -37,3 +37,20 @@ export type EpisodeRecordType = {
     createdTime: string
 }
 export type EpisodeRecords = Array<EpisodeRecordType>
+
+export type HistoryItemType = {
+    id: string,
+    createdTime: string,
+    fields: {
+        WatchedAt: string,
+        EpisodeSeason: number,
+        EpisodeNumber: number,
+        EpisodeId: number,
+        EpisodeTitle: string,
+        ID: number,
+        ShowId: number,
+        TV_tracker: string[],
+        ShowTitle: string,
+        Calculation: string
+    }
+}

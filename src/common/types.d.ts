@@ -1,4 +1,5 @@
 import {Dispatch} from "react";
+import {HistoryItemType, Records} from "@/common/airtableTypes";
 
 export type TokensType = {
     TMDBToken: string,
@@ -12,4 +13,6 @@ export type GlobalContextType = {
     readCookies: () => void,
     showData: Records,
     setShowData: Dispatch<Records>
+    historyData: HistoryItemType[],
+    setHistoryData: Dispatch<HistoryItemType[]>
 }

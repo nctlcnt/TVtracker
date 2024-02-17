@@ -7,7 +7,7 @@ const ShowListItem = ({show}: { show: RecordType }) => {
     return (
         <Paper sx={{display: 'flex', flexDirection: 'row'}}>
             <Box>
-                <Avatar variant={'rounded'} alt={show.fields.Title || ''}
+                <Avatar variant={'rounded'} alt={show.fields.ShowTitle || ''}
                         src={`https://image.tmdb.org/t/p/w500${(show.fields.poster)}`}
                         style={{width: 130, height: 130}}/>
             </Box>
