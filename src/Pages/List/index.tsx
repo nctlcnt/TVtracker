@@ -2,16 +2,15 @@ import {getRecordsUrl} from "@/common/apis.ts";
 import axios from "axios";
 import {useRequest} from "ahooks";
 import React from "react";
-import {Button} from "@mui/material";
+import {Box, Button, Chip, Divider, Stack} from "@mui/material";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
-import {DataGrid} from "@mui/x-data-grid";
 import {Link} from "react-router-dom";
-import {Records} from "@/common/airtableTypes";
+import {Records, RecordType} from "@/common/airtableTypes";
+import ShowListItem from "@/Pages/List/ShowListItem.tsx";
 
 export default () => {
     const {tokens, showData, setShowData} = React.useContext(GlobalContext)
     const {airtableToken, airtableBaseId} = tokens
-    console.log(tokens)
 
     const requestUrl = getRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'show_database')
     const requestTvRecords = async () => {
@@ -31,28 +30,53 @@ export default () => {
         }
     })
 
+    const statusChips = ['Watching', 'Watched', 'InList', 'Dropped', 'Paused']
+    const [filterChips, setFilterChips] = React.useState<string[]>(['Watching', 'InList',])
+
 
     return <div>
         <Link to={'/'}>Go Back</Link>
         {loading && <p>loading...</p>}
-        <Button onClick={getTvRecords}>getTvRecords</Button>
-        <DataGrid autoHeight={true} rows={showData} columns={[
+        <Box flexDirection={'row'} display={'flex'}>
+            <Stack spacing={1} direction={'row'}>
+                {
+                    statusChips.filter((chip) => !filterChips.includes(chip)).map((chip) => {
+                        return <Chip size={'small'} variant={'outlined'} key={chip} label={chip}
+                                     onClick={() => setFilterChips([...filterChips, chip])}/>
+                    })
+                }
+            </Stack>
+            {!!filterChips.length && !!statusChips.filter((chip) => !filterChips.includes(chip)).length &&
+                <Divider orientation={'vertical'} flexItem sx={{mx: 1}}/>}
+            <Stack spacing={1} direction={'row'}>
+                {/*  filer chips array  */}
+                {filterChips.map((chip) => {
+                    return <Chip size={'small'} key={chip} label={chip} color={'primary'} onClick={() => {
+                        if (filterChips.includes(chip)) {
+                            if(filterChips.length === 1) {
+                                return
+                            }
+                            setFilterChips(filterChips.filter((item) => item !== chip))
+                        } else {
+                            setFilterChips([...filterChips, chip])
+                        }
+                    }
+                    }/>
+                })}
+            </Stack>
+        </Box>
+
+        <Button onClick={getTvRecords} variant={'outlined'} sx={{m:1}}>refresh</Button>
+
+        <Stack spacing={1}>
             {
-                field: 'Title', headerName: 'Title',
-                renderCell: (params) => {
-                    return <Link to={`/show/${params.row.fields.ID}`}>{params.row.fields.Title}</Link>
-                }, width: 250
-            },
-            {
-                field: 'status', headerName: 'Status', valueGetter: (params) => {
-                    return params.row.fields.status
-                }, width: 150,
-            },
-            {
-                field: 'Progress', headerName: 'Progress', valueGetter: (params) => {
-                    return params.row.fields.Progress
-                }, width: 150,
-            },
-        ]}/>
+                showData && showData.length > 0 && showData
+                    .filter((item: RecordType) => filterChips.includes(item.fields.status))
+                    .map((item: RecordType) => {
+                        return <ShowListItem key={item.id} show={item}/>
+                    })
+            }
+        </Stack>
+
     </div>
 }

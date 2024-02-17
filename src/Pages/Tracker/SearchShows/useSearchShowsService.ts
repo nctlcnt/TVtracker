@@ -42,6 +42,8 @@ const useSearchShowsService = () => {
                     ID: item.id,
                     ShowTitle: `${item.name} (${item.original_name})`,
                     FirstAired: item.first_air_date,
+                    poster: item.poster_path,
+                    overview: item.overview,
                 },
             },
         ],
