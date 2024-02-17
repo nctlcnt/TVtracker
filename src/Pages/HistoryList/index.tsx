@@ -1,6 +1,6 @@
 import useRequestHooks from "@/common/useRequestHooks.ts";
 import React, {useEffect} from "react";
-import {Backdrop, Box, Stack, Typography} from "@mui/material";
+import {Backdrop, Box, Button, CircularProgress, Divider, Stack, Typography} from "@mui/material";
 import {Link, redirect} from "react-router-dom";
 import GlobalContext from "@/globalContext/GlobalContext.ts";
 import {HistoryItemType} from "@/common/airtableTypes";
@@ -32,8 +32,17 @@ const HistoryList = () => {
         }, []
     )
     return <Box>
-        <Backdrop open={gettingAirtableRecords}/>
+        <Typography variant={'h3'}>History</Typography>
+
         <Link to={'/'}>Go Back</Link>
+        <Divider/>
+        <Button onClick={() => getAirtableRecords('episode_tracker')}>Refresh</Button>
+        <Backdrop
+            sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
+            open={gettingAirtableRecords}
+        >
+            <CircularProgress color="inherit"/>
+        </Backdrop>
         <Stack>
             {
                 historyData && historyData.map((item) => {
@@ -44,6 +53,7 @@ const HistoryList = () => {
                     </Box>
                 })
             }
-        </Stack></Box>
+        </Stack>
+    </Box>
 }
 export default HistoryList
