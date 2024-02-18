@@ -1,15 +1,20 @@
 import {RecordType} from "@/common/airtableTypes";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Avatar, Box, Chip, Paper, Typography} from "@mui/material";
 import {formatDate, formatDistanceToNow} from "date-fns";
 
 const ShowListItem = ({show}: { show: RecordType }) => {
+    const navigate = useNavigate()
     return (
         <Paper sx={{display: 'flex', flexDirection: 'row'}}>
             <Box>
                 <Avatar variant={'rounded'} alt={show.fields.ShowTitle || ''}
                         src={`https://image.tmdb.org/t/p/w500${(show.fields.poster)}`}
-                        style={{width: 130, height: 130}}/>
+                        style={{width: 130, height: 130}}
+                        onClick={() => {
+                            navigate(`/show/${show.fields.ID}`)
+                        }}
+                />
             </Box>
             <Box display={'flex'} flexDirection={'column'} flexGrow={1} p={1} maxHeight={130}>
                 <Box textAlign={'left'} flexGrow={1}>
