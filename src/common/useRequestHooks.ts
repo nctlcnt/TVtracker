@@ -14,10 +14,10 @@ const useRequestHooks = ({requestAirtableCb}: { requestAirtableCb?: Function }) 
         }
     }, []);
 
-    const requestTvRecords = async (databaseName: string) => {
+    const requestTvRecords = async (databaseName: string, otherParams?: any) => {
         const requestUrl = getRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', databaseName)
         return axios.get(requestUrl, {
-                params: {view: 'All'},
+                params: {view: 'All', ...otherParams},
                 headers: {
                     Authorization: `Bearer ${airtableToken}`
                 },

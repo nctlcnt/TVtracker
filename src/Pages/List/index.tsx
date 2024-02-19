@@ -21,6 +21,9 @@ export default () => {
         if (!airtableToken || !airtableBaseId || !TMDBToken) {
             redirect('/')
         }
+        if(!showData.length){
+            getAirtableRecords('show_database')
+        }
     }, []);
 
 
