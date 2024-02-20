@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, InputBase, Paper, Stack, TextField } from '@mui/material'
+import { Backdrop, Button, Divider, IconButton, InputBase, Paper, Stack, TextField } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { ArrowRightRounded } from '@mui/icons-material'
 import useInitService from '@/Pages/InitComponent/useInitService.ts'
@@ -13,10 +13,16 @@ const InitComponent = function () {
         airtableToken,
         airtableBaseId,
         readCookies,
+        gettingSettings,
+        settings,
     } = useInitService()
+    console.log('settings', settings)
 
     return (
         <div>
+            <Backdrop open={gettingSettings}>
+                <p>loading...</p>
+            </Backdrop>
             <Stack>
                 {['TMDBToken', 'airtableToken', 'airtableBaseId'].map((item) => (
                     <Paper
@@ -73,7 +79,7 @@ const InitComponent = function () {
                 {TMDBToken && airtableToken && airtableBaseId && (
                     <Stack>
                         <span>
-                            <Link to="/tracker">Go to Tracker</Link>
+                            <Link to="/tracker">Go to Search</Link>
                         </span>
                         <span>
                             <Link to="/list">Go to List</Link>

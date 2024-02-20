@@ -2,10 +2,20 @@ import { Button, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemTe
 import AddIcon from '@mui/icons-material/Add'
 import { CheckRounded, ManageSearchRounded } from '@mui/icons-material'
 import useSearchShowsService from '@/Pages/Tracker/SearchShows/useSearchShowsService.ts'
+import ProviderList from '@/Pages/Tracker/SearchShows/ProviderList.tsx'
 
 export default function () {
-    const { loading, search, result, addShow, searchStreamProviders, addingShow, addedShows } = useSearchShowsService()
-
+    const {
+        loading,
+        search,
+        result,
+        addShow,
+        searchStreamProviders,
+        providerResults,
+        addingShow,
+        settings,
+        addedShows,
+    } = useSearchShowsService()
     return (
         <div>
             <Paper sx={{ display: 'flex', p: 1 }}>
@@ -32,6 +42,7 @@ export default function () {
                     </ListItem>
                 ))}
             </List>
+            <ProviderList settings={settings} providers={providerResults} />
         </div>
     )
 }

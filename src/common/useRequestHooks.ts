@@ -1,18 +1,18 @@
 import { getRecordsUrl } from '@/common/apis.ts'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
-import React, { useEffect } from 'react'
-import GlobalContext from '@/globalContext/GlobalContext.ts'
+
+export const getTokensFromCookies = () => {
+    const airtableToken = document.cookie.match(/airtableToken=([^;]+)/)?.[1] || ''
+    const TMDBToken = document.cookie.match(/TMDBToken=([^;]+)/)?.[1] || ''
+    const airtableBaseId = document.cookie.match(/airtableBaseId=([^;]+)/)?.[1] || ''
+    return { TMDBToken, airtableToken, airtableBaseId }
+}
 
 const useRequestHooks = ({ requestAirtableCb }: { requestAirtableCb?: Function }) => {
-    const { tokens, readCookies } = React.useContext(GlobalContext)
-    const { airtableToken, airtableBaseId } = tokens
-
-    useEffect(() => {
-        if (!airtableToken || !airtableBaseId) {
-            readCookies()
-        }
-    }, [])
+    const tokens = getTokensFromCookies()
+    const airtableToken = tokens?.airtableToken
+    const airtableBaseId = tokens?.airtableBaseId
 
     const requestTvRecords = async (databaseName: string, otherParams?: any) => {
         const requestUrl = getRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', databaseName)
@@ -31,7 +31,10 @@ const useRequestHooks = ({ requestAirtableCb }: { requestAirtableCb?: Function }
         },
     })
 
-    return { getAirtableRecords, gettingAirtableRecords }
+    return {
+        getAirtableRecords: airtableToken || airtableBaseId ? getAirtableRecords : () => {},
+        gettingAirtableRecords,
+    }
 }
 
 export default useRequestHooks
