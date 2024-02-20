@@ -77,7 +77,6 @@ export default () => {
                     })}
                 </Stack>
             </Box>
-
             <Button
                 onClick={() => {
                     getAirtableRecords('show_database')
@@ -87,7 +86,6 @@ export default () => {
             >
                 refresh
             </Button>
-
             <Stack spacing={1}>
                 {showData &&
                     showData.length > 0 &&

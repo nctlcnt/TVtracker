@@ -3,7 +3,7 @@ import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { TokensType } from '@/common/types'
 
 const useInitService = () => {
-    const { tokens, readCookies, setTokens } = React.useContext(GlobalContext)
+    const { tokens, readCookies, setTokens, settings, gettingSettings } = React.useContext(GlobalContext)
     const { TMDBToken, airtableToken, airtableBaseId } = tokens
     const [cookies, setCookies] = React.useState('')
 
@@ -33,6 +33,8 @@ const useInitService = () => {
         cookies,
         setCookies,
         readCookies,
+        gettingSettings,
+        settings,
     }
 }
 export default useInitService

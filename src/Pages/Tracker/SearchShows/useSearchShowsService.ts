@@ -5,14 +5,16 @@ import { createRecordsUrl, searchProviders, searchTvShows } from '@/common/apis.
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { ShowDetailType, TMDBResults } from '@/common/tmdbTypes'
 import { RecordType } from '@/common/airtableTypes'
+import { ProviderRecords } from '@/common/types'
 
 const useSearchShowsService = () => {
     const [result, setResult] = useState<TMDBResults>([] as TMDBResults)
-    const { tokens } = React.useContext(GlobalContext)
+    const { tokens, settings } = React.useContext(GlobalContext)
     const { TMDBToken, airtableToken, airtableBaseId } = tokens
     const addShowUrl = createRecordsUrl.replace('{baseId}', airtableBaseId).replace('{tableIdOrName}', 'show_database')
     const [addedShows, setAddedShows] = useState<number[]>([] as number[])
 
+    const [providerResults, setProviderResults] = useState<ProviderRecords>([] as any)
     const getTvShows = (queryString: string) =>
         axios.get(searchTvShows, {
             params: {
@@ -82,6 +84,7 @@ const useSearchShowsService = () => {
         manual: true,
         onSuccess: (data) => {
             console.log('searchProviders', data)
+            setProviderResults(data.data.results)
         },
     })
     return {
@@ -92,6 +95,8 @@ const useSearchShowsService = () => {
         loading,
         addingShow,
         addedShows,
+        settings,
+        providerResults,
     }
 }
 export default useSearchShowsService

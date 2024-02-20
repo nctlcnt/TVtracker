@@ -2,11 +2,19 @@ import { getRecordsUrl } from '@/common/apis.ts'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
 import React, { useEffect } from 'react'
-import GlobalContext from '@/globalContext/GlobalContext.ts'
+import { TokensType } from '@/common/types'
 
 const useRequestHooks = ({ requestAirtableCb }: { requestAirtableCb?: Function }) => {
-    const { tokens, readCookies } = React.useContext(GlobalContext)
-    const { airtableToken, airtableBaseId } = tokens
+    const [tokens, setTokens] = React.useState({} as TokensType)
+    const readCookies = () => {
+        console.log('readCookies', document.cookie)
+        const airtableToken = document.cookie.match(/airtableToken=([^;]+)/)?.[1] || ''
+        const TMDBToken = document.cookie.match(/TMDBToken=([^;]+)/)?.[1] || ''
+        const airtableBaseId = document.cookie.match(/airtableBaseId=([^;]+)/)?.[1] || ''
+        setTokens({ TMDBToken, airtableToken, airtableBaseId })
+    }
+    const airtableToken = tokens?.airtableToken
+    const airtableBaseId = tokens?.airtableBaseId
 
     useEffect(() => {
         if (!airtableToken || !airtableBaseId) {
@@ -31,7 +39,10 @@ const useRequestHooks = ({ requestAirtableCb }: { requestAirtableCb?: Function }
         },
     })
 
-    return { getAirtableRecords, gettingAirtableRecords }
+    return {
+        getAirtableRecords: airtableToken || airtableBaseId ? getAirtableRecords : () => {},
+        gettingAirtableRecords,
+    }
 }
 
 export default useRequestHooks

@@ -1,11 +1,13 @@
 import useRequestHooks from '@/common/useRequestHooks.ts'
 import React, { useEffect } from 'react'
-import { Backdrop, Box, Button, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { Backdrop, Box, Button, CircularProgress, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { Link, redirect } from 'react-router-dom'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { HistoryItemType } from '@/common/airtableTypes'
 import { formatDate } from 'date-fns'
-import BasicSpeedDial from '@/common/Components/BasicSpeedDial.tsx'
+import axios from 'axios'
+import { useRequest } from 'ahooks'
+import { HighlightOffRounded } from '@mui/icons-material'
 
 const HistoryList = () => {
     const { tokens, readCookies, historyData, setHistoryData } = React.useContext(GlobalContext)
@@ -38,10 +40,29 @@ const HistoryList = () => {
         return '#' + n.slice(2, 8)
     }
 
+    const deleteRecordRequest = async (recordId: string) => {
+        const requestUrl = `https://api.airtable.com/v0/${airtableBaseId}/episode_tracker`
+        return axios.delete(requestUrl, {
+            params: {
+                records: [recordId],
+            },
+            headers: {
+                Authorization: `Bearer ${airtableToken}`,
+            },
+        })
+    }
+
+    const { run: deleteRecord } = useRequest(deleteRecordRequest, {
+        manual: true,
+        onSuccess: (data) => {
+            console.log('deleteRecord', data)
+            refresh()
+        },
+    })
+
     return (
         <Box>
             <Typography variant={'h3'}>History</Typography>
-
             <Link to={'/'}>Go Back</Link>
             <Divider />
             <Button onClick={refresh}>Refresh</Button>
@@ -85,12 +106,19 @@ const HistoryList = () => {
                                                 : item.fields.EpisodeNumber}
                                         </Typography>
                                     </Box>
+                                    <IconButton
+                                        sx={{ ml: 1 }}
+                                        onClick={() => {
+                                            deleteRecord(item.id)
+                                        }}
+                                    >
+                                        <HighlightOffRounded />
+                                    </IconButton>
                                 </Stack>
                             </Box>
                         )
                     })}
             </Stack>
-            <BasicSpeedDial />
         </Box>
     )
 }
