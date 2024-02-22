@@ -17,8 +17,6 @@ export type GlobalContextType = {
     setShowData: Dispatch<ShowType[]>
     historyData: HistoryItemProps[]
     setHistoryData: Dispatch<HistoryItemProps[]>
-    settings: SettingsType
-    gettingSettings: boolean
 } & InitDataType
 
 export type SelectionRecords = {
