@@ -1,41 +1,40 @@
-import { RecordType } from '@/common/airtableTypes'
 import { Link, useNavigate } from 'react-router-dom'
 import { Avatar, Box, Chip, Paper, Typography } from '@mui/material'
-import { formatDate, formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
+import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
 
-const ShowListItem = ({ show }: { show: RecordType }) => {
+const ShowListItem = ({ show }: { show: ShowType }) => {
     const navigate = useNavigate()
     return (
         <Paper sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box>
                 <Avatar
                     variant={'rounded'}
-                    alt={show.fields.ShowTitle || ''}
-                    src={`https://image.tmdb.org/t/p/w500${show.fields.poster}`}
+                    alt={show.showTitle || ''}
+                    src={`https://image.tmdb.org/t/p/w500${show.posterPath}`}
                     style={{ width: 130, height: 130 }}
                     onClick={() => {
-                        navigate(`/show/${show.fields.ID}`)
+                        navigate(`/show/${show.showId}`)
                     }}
                 />
             </Box>
             <Box display={'flex'} flexDirection={'column'} flexGrow={1} p={1} maxHeight={130}>
                 <Box textAlign={'left'} flexGrow={1}>
-                    <Link to={`/show/${show.fields.ID}`}>{show.fields.Title}</Link>
-                    {show.fields.LastWatched && (
-                        <Typography variant={'body1'}>
-                            {show.fields.status === 'Watched' ? <b>Finished at: </b> : <b>Last Watched: </b>}
-                            {formatDate(new Date(show.fields.LastWatched), 'yyyy-MM-dd')}
-                        </Typography>
-                    )}
-                    {!['Watching', 'Watched', 'Paused', 'Dropped'].includes(show.fields.status) && (
+                    <Link to={`/show/${show.showId}`}>{show.showTitle}</Link>
+                    {/*{show.LastWatched && (*/}
+                    {/*    <Typography variant={'body1'}>*/}
+                    {/*        {show.status === 'Watched' ? <b>Finished at: </b> : <b>Last Watched: </b>}*/}
+                    {/*        {formatDate(new Date(show.LastWatched), 'yyyy-MM-dd')}*/}
+                    {/*    </Typography>*/}
+                    {/*)}*/}
+                    {!['Watching', 'Watched', 'Paused', 'Dropped'].includes(show.status) && (
                         <Typography>
-                            <b>In list from: </b>{' '}
-                            {formatDistanceToNow(new Date(show.fields.Created), { addSuffix: true })}
+                            <b>In list from: </b> {formatDistanceToNow(new Date(show.created), { addSuffix: true })}
                         </Typography>
                     )}
                 </Box>
                 <Box sx={{ textAlign: 'right' }}>
-                    <Chip label={show.fields.status} size={'small'} variant={'outlined'} />
+                    <Chip label={show.status} size={'small'} variant={'outlined'} />
                 </Box>
             </Box>
         </Paper>

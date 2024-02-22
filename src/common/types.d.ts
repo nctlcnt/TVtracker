@@ -1,5 +1,7 @@
 import { Dispatch } from 'react'
-import { HistoryItemType, Records } from '@/common/airtableTypes'
+import { InitDataType } from '@/globalContext/useInit.ts'
+import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
+import { HistoryItemProps } from '@/Pages/HistoryList'
 
 export type TokensType = {
     TMDBToken: string
@@ -11,13 +13,13 @@ export type GlobalContextType = {
     tokens: TokensType
     setTokens: Dispatch<TokensType>
     readCookies: () => void
-    showData: Records
-    setShowData: Dispatch<Records>
-    historyData: HistoryItemType[]
-    setHistoryData: Dispatch<HistoryItemType[]>
+    showData: ShowType[]
+    setShowData: Dispatch<ShowType[]>
+    historyData: HistoryItemProps[]
+    setHistoryData: Dispatch<HistoryItemProps[]>
     settings: SettingsType
     gettingSettings: boolean
-}
+} & InitDataType
 
 export type SelectionRecords = {
     id: string

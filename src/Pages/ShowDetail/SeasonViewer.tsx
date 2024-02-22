@@ -11,37 +11,32 @@ import {
     Typography,
 } from '@mui/material'
 import React, { Dispatch, useEffect } from 'react'
-import { createRecordsUrl, getSeasonDetails } from '@/common/apis.ts'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
 import { EpisodeType, SeasonDetailType, ShowDetailType } from '@/common/tmdbTypes'
-import { EpisodeRecordType } from '@/common/airtableTypes'
 import { isBefore } from 'date-fns'
 import { CheckRounded } from '@mui/icons-material'
+import { getSeasonDetails } from '@/apis/tmdbAPI.ts'
+import { getProgressUrl } from '@/apis/mongodbAPI.ts'
+import { HistoryRequestProps } from '@/Pages/HistoryList'
 
 export default ({
     seasonId,
     setSeasonId,
     showId,
-    showDetail,
 }: {
     seasonId?: number
     setSeasonId?: Dispatch<number>
     showId?: string
     showDetail: ShowDetailType | null
 }) => {
-    const { tokens } = React.useContext(GlobalContext)
+    const { tokens, userId } = React.useContext(GlobalContext)
     const { TMDBToken } = tokens
     const requestSeasonUrl = getSeasonDetails
         .replace('{series_id}', showId || '')
         .replace('{season_number}', String(seasonId))
-    const { airtableToken, airtableBaseId } = tokens
-    const addShowUrl = createRecordsUrl
-        .replace('{baseId}', airtableBaseId)
-        .replace('{tableIdOrName}', 'episode_tracker')
     const [addingShowId, setAddingShowId] = React.useState<number | null>(null)
-
     const [addedShowIds, setAddedShowIds] = React.useState<number[]>([])
     const [error, setError] = React.useState<string | null>(null)
     const [seasonDetail, setSeasonDetail] = React.useState<SeasonDetailType | null>(null)
@@ -64,50 +59,34 @@ export default ({
         },
     })
 
-    const postShow = (item: EpisodeType) => {
-        return axios.post(
-            addShowUrl,
-            {
-                records: [
-                    {
-                        fields: {
-                            ShowTitle: showDetail?.name,
-                            EpisodeSeason: item.season_number,
-                            EpisodeNumber: item.episode_number,
-                            EpisodeTitle: item.name,
-                            WatchedAt: new Date().toISOString(),
-                            Aired: item.air_date,
-                            Runtime: item.runtime,
-                            EpisodeId: item.id,
-                            ShowId: showDetail?.id,
-                        },
-                    },
-                ],
-            } as { records: Pick<EpisodeRecordType, 'fields'>[] },
-            {
-                headers: {
-                    Authorization: `Bearer ${airtableToken}`,
-                },
-            }
-        )
-    }
-
-    const { run: addShow } = useRequest(postShow, {
+    const checkInRequest = (episode: EpisodeType) =>
+        axios.post(getProgressUrl, {
+            showId: Number(showId),
+            episodeId: episode.id,
+            episodeSeason: episode.season_number,
+            episodeNumber: episode.episode_number,
+            episodeTitle: episode.name,
+            watchedAt: new Date().toISOString(),
+            runtime: episode.runtime,
+            aired: episode.air_date,
+            createdBy: userId,
+        } as HistoryRequestProps)
+    const { run: addNewProgress } = useRequest(checkInRequest, {
         manual: true,
         onSuccess: (data) => {
-            console.log('addShow success', data)
+            console.log('checkIn success', data)
             setAddedShowIds([...addedShowIds, addingShowId as number])
             setAddingShowId(null)
         },
         onError: (error) => {
-            console.error('addShow error', error)
+            console.error('checkIn error', error)
             setAddingShowId(null)
             setError(error.message)
         },
     })
 
     const checkIn = (episode: EpisodeType) => {
-        addShow(episode)
+        addNewProgress(episode)
         setAddingShowId(episode.id)
     }
 

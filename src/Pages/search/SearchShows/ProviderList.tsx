@@ -1,11 +1,11 @@
-import { ProviderRecords, SettingsType } from '@/common/types'
+import { ProviderRecords } from '@/common/types'
 import { Box, Divider, Stack, Typography } from '@mui/material'
 
-const ProviderList = ({ settings, providers }: { settings: SettingsType; providers: ProviderRecords }) => {
+const ProviderList = ({ preferredRegions, providers }: { preferredRegions: string[]; providers: ProviderRecords }) => {
     return (
         <Box>
             <p>Provider List</p>
-            {settings?.preferredProviders?.map((country) => (
+            {preferredRegions?.map((country) => (
                 <Box key={country}>
                     <h3>{country}</h3>
                     {providers[country]?.ads?.length > 0 && (

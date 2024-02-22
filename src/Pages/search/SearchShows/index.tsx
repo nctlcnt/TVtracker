@@ -1,8 +1,8 @@
 import { Button, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { CheckRounded, ManageSearchRounded } from '@mui/icons-material'
-import useSearchShowsService from '@/Pages/Tracker/SearchShows/useSearchShowsService.ts'
-import ProviderList from '@/Pages/Tracker/SearchShows/ProviderList.tsx'
+import useSearchShowsService from '@/Pages/search/SearchShows/useSearchShowsService.ts'
+import ProviderList from '@/Pages/search/SearchShows/ProviderList.tsx'
 
 export default function () {
     const {
@@ -13,7 +13,7 @@ export default function () {
         searchStreamProviders,
         providerResults,
         addingShow,
-        settings,
+        preferredRegions,
         addedShows,
     } = useSearchShowsService()
     return (
@@ -42,7 +42,7 @@ export default function () {
                     </ListItem>
                 ))}
             </List>
-            <ProviderList settings={settings} providers={providerResults} />
+            <ProviderList preferredRegions={preferredRegions} providers={providerResults} />
         </div>
     )
 }
