@@ -12,3 +12,5 @@ Due to the complex nature of the request body in iOS shortcuts, I have created a
 
 - [important] The app is designed for personal use, so it's not user-friendly.
 - Some features can be used even without exactly same table settings in Airtable as mine: search TV shows, ... more to be added
+
+> backend repo: https://github.com/nctlcnt/tv-tracker-service
