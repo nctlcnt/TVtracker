@@ -1,5 +1,4 @@
 import { Link, useParams } from 'react-router-dom'
-import { getTvShowDetails } from '@/common/apis.ts'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
 import { ShowDetailType } from '@/common/tmdbTypes'
@@ -7,7 +6,8 @@ import React, { useEffect } from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { Avatar, Box, Button, Divider, Drawer, List, ListItem, ListItemText, Stack, Typography } from '@mui/material'
 import SeasonViewer from '@/Pages/ShowDetail/SeasonViewer.tsx'
-import { RecordType } from '@/common/airtableTypes'
+import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
+import { getTvShowDetails } from '@/apis/tmdbAPI.ts'
 
 export default () => {
     const { id } = useParams()
@@ -15,9 +15,7 @@ export default () => {
     const { TMDBToken } = tokens
     const [seasonId, setSeasonId] = React.useState<number | null>(null)
     const [showDetail, setShowDetail] = React.useState<ShowDetailType | null>(null)
-    const [show] = React.useState<RecordType | null>(
-        showData.filter((show) => String(show.fields.ID) === id)[0] || null
-    )
+    const [show] = React.useState<ShowType | null>(showData.filter((show) => String(show.showId) === id)[0] || null)
 
     console.log(showData, id, show)
     const requestShowDetails = async () => {
@@ -54,7 +52,7 @@ export default () => {
                             <Typography variant={'caption'}>({showDetail.original_name})</Typography>
                         )}
                     </h1>
-                    <h2>{'S' + show?.fields.ProgressSeason + 'E' + show?.fields.ProgressEpisode}</h2>
+                    {/*<h2>{'S' + show?.fields.ProgressSeason + 'E' + show?.fields.ProgressEpisode}</h2>*/}
                     <Stack direction={{ xs: 'column', sm: 'row' }}>
                         <Avatar
                             src={`https://image.tmdb.org/t/p/w500${showDetail.poster_path}`}
