@@ -10,11 +10,10 @@ import { TMDBBaseUrl } from '@/apis/tmdbAPI.ts'
 
 // read token from cookies
 const token =
-    document.cookie &&
-    document.cookie
-        .split(';')
+    document?.cookie
+        ?.split(';')
         .filter((item) => item.includes('TMDBToken'))[0]
-        .split('=')[1]
+        .split('=')[1] || ''
 
 // default configurations
 const axiosInstance: AxiosInstance = axios.create({
