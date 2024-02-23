@@ -3,8 +3,10 @@ import AddIcon from '@mui/icons-material/Add'
 import { CheckRounded, ManageSearchRounded } from '@mui/icons-material'
 import useSearchShowsService from '@/Pages/search/useSearchShowsService.ts'
 import ProviderList from '@/Pages/search/ProviderList.tsx'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 export default function () {
+    useAuthCheck()
     const {
         loading,
         search,

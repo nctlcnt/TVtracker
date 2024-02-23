@@ -6,8 +6,11 @@ import axios from 'axios'
 import { useRequest } from 'ahooks'
 import { dbShowsRequest } from '@/apis/mongodbAPI.ts'
 import { ShowListItemRecord } from '@/common/types/mongo'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 export default () => {
+    useAuthCheck()
+
     const { showData, readCookies, setShowData, userId, userSettings } = React.useContext(GlobalContext)
     console.log(userSettings)
 
