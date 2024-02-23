@@ -53,7 +53,15 @@ export default () => {
         return '#' + n.slice(2, 8)
     }
     return (
-        <div style={{ background: '#f3e8d7', minHeight: '100vh', padding: '16px', position: 'relative' }}>
+        <div
+            style={{
+                background: '#f3e8d7',
+                minHeight: '100vh',
+                padding: '16px',
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
             <Stack gap={2} mb={3}>
                 <Divider />
                 <Link to={'/list'}>Go Back</Link>
