@@ -13,7 +13,7 @@ const token =
     document?.cookie
         ?.split(';')
         .filter((item) => item.includes('TMDBToken'))[0]
-        .split('=')[1] || ''
+        ?.split('=')[1] || ''
 
 // default configurations
 const axiosInstance: AxiosInstance = axios.create({
