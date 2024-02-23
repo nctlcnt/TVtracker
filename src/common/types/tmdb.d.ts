@@ -1,4 +1,4 @@
-export type SeasonType = {
+export type SeasonFromTMDB = {
     air_date: string
     episode_count: number
     id: number
@@ -8,7 +8,7 @@ export type SeasonType = {
     season_number: number
 }
 
-export type EpisodeType = {
+export type APIEpisodeInfoType = {
     air_date: string
     episode_number: number
     id: number
@@ -22,10 +22,10 @@ export type EpisodeType = {
     runtime: number
 }
 
-export type SeasonDetailType = {
+export type APISeasonInfoType = {
     _id: string
     air_date: string
-    episodes: Array<EpisodeType>
+    episodes: Array<APIEpisodeInfoType>
     name: string
     overview: string
     id: number
@@ -33,7 +33,7 @@ export type SeasonDetailType = {
     season_number: number
 }
 
-export type ShowDetailType = {
+export type APIShowDetailType = {
     adult: boolean
     backdrop_path: string
     id: number
@@ -46,10 +46,24 @@ export type ShowDetailType = {
     name: string
     vote_average: number
     vote_count: number
-    seasons: Array<SeasonType>
+    seasons: Array<SeasonFromTMDB>
     status: string
     number_of_episodes: number
     number_of_seasons: number
 }
-
-export type TMDBResults = Array<ShowDetailType>
+export type APIShowListItemType = {
+    adult: boolean
+    backdrop_path: string
+    first_air_date: string
+    genre_ids: Array<number>
+    id: number
+    name: string
+    origin_country: Array<string>
+    original_language: string
+    original_name: string
+    overview: string
+    popularity: number
+    poster_path: string
+    vote_average: number
+    vote_count: number
+}

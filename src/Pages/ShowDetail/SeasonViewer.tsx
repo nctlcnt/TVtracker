@@ -1,37 +1,29 @@
-import {
-    Backdrop,
-    Box,
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    CircularProgress,
-    Grid,
-    Snackbar,
-    Typography,
-} from '@mui/material'
+import { Backdrop, Box, CircularProgress, IconButton, List, Snackbar, Typography } from '@mui/material'
 import React, { Dispatch, useEffect } from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
-import { EpisodeType, SeasonDetailType, ShowDetailType } from '@/common/tmdbTypes'
-import { isBefore } from 'date-fns'
-import { CheckRounded } from '@mui/icons-material'
 import { getSeasonDetails } from '@/apis/tmdbAPI.ts'
-import { getProgressUrl } from '@/apis/mongodbAPI.ts'
-import { HistoryRequestProps } from '@/Pages/HistoryList'
+import { dbHistoryRequest } from '@/apis/mongodbAPI.ts'
+import EpisodeItem from '@/Pages/ShowDetail/EpisodeItem.tsx'
+import { Link } from 'react-router-dom'
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded'
+import { APISeasonInfoType, APIEpisodeInfoType } from '@/common/types/tmdb'
+import { ProgressHistoryEntry } from '@/common/types/mongo'
 
 export default ({
     seasonId,
     setSeasonId,
     showId,
 }: {
-    seasonId?: number
-    setSeasonId?: Dispatch<number>
+    seasonId: string | null
+    setSeasonId?: Dispatch<string | null>
     showId?: string
-    showDetail: ShowDetailType | null
 }) => {
     const { tokens, userId } = React.useContext(GlobalContext)
+    if (!userId) {
+        return <Link to={'/'}>Go Back</Link>
+    }
     const { TMDBToken } = tokens
     const requestSeasonUrl = getSeasonDetails
         .replace('{series_id}', showId || '')
@@ -39,7 +31,7 @@ export default ({
     const [addingShowId, setAddingShowId] = React.useState<number | null>(null)
     const [addedShowIds, setAddedShowIds] = React.useState<number[]>([])
     const [error, setError] = React.useState<string | null>(null)
-    const [seasonDetail, setSeasonDetail] = React.useState<SeasonDetailType | null>(null)
+    const [seasonDetail, setSeasonDetail] = React.useState<APISeasonInfoType | null>(null)
     const requestSeasonDetails = async () => {
         return axios.get(requestSeasonUrl, {
             params: {
@@ -51,16 +43,16 @@ export default ({
         })
     }
 
-    const { run: getSeason } = useRequest(requestSeasonDetails, {
+    const { run: getSeason, loading } = useRequest(requestSeasonDetails, {
         manual: true,
         onSuccess: (data) => {
-            console.log('getSeasonDetails', data.data as SeasonDetailType)
-            setSeasonDetail(data.data as SeasonDetailType)
+            console.log('getSeasonDetails', data.data as APISeasonInfoType)
+            setSeasonDetail(data.data as APISeasonInfoType)
         },
     })
 
-    const checkInRequest = (episode: EpisodeType) =>
-        axios.post(getProgressUrl, {
+    const checkInRequest = (episode: APIEpisodeInfoType) =>
+        axios.post(dbHistoryRequest, {
             showId: Number(showId),
             episodeId: episode.id,
             episodeSeason: episode.season_number,
@@ -70,7 +62,7 @@ export default ({
             runtime: episode.runtime,
             aired: episode.air_date,
             createdBy: userId,
-        } as HistoryRequestProps)
+        } as ProgressHistoryEntry)
     const { run: addNewProgress } = useRequest(checkInRequest, {
         manual: true,
         onSuccess: (data) => {
@@ -85,7 +77,7 @@ export default ({
         },
     })
 
-    const checkIn = (episode: EpisodeType) => {
+    const checkIn = (episode: APIEpisodeInfoType) => {
         addNewProgress(episode)
         setAddingShowId(episode.id)
     }
@@ -97,52 +89,37 @@ export default ({
 
     return (
         <Box p={2}>
-            <Backdrop open={addingShowId !== null} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+            <Backdrop open={addingShowId !== null || loading} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <CircularProgress />
             </Backdrop>
-            <Button onClick={() => setSeasonId && setSeasonId(0)} variant={'outlined'}>
-                Close
-            </Button>
-            {seasonDetail && (
-                <p>
-                    {seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})
-                </p>
-            )}
-            {/*<Button onClick={getSeason}>getSeasonDetails</Button>*/}
-            <Grid container={true} spacing={1} columns={{ xs: 2, md: 4 }}>
+            <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                {seasonDetail && (
+                    <Typography display={'inline-block'}>
+                        {seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})
+                    </Typography>
+                )}
+                <IconButton onClick={() => setSeasonId && setSeasonId(null)}>
+                    <HighlightOffRoundedIcon color={'error'} />
+                </IconButton>
+            </Box>
+
+            <List>
                 {seasonDetail &&
-                    seasonDetail.episodes.map((episode) => {
+                    seasonDetail.episodes.map((episode: APIEpisodeInfoType) => {
                         return (
-                            <Grid item={true} key={episode.id}>
-                                <Card sx={{ width: '100%' }}>
-                                    <CardContent>
-                                        <Typography sx={{ fontSize: '14px' }} color={'gray'}>
-                                            {episode.episode_number}
-                                        </Typography>
-                                        <Typography variant={'h6'}>{episode.name}</Typography>
-                                        <Typography variant={'body2'}>{episode.air_date}</Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        {addedShowIds.includes(episode.id) ? (
-                                            <CheckRounded color={'success'} />
-                                        ) : (
-                                            <Button
-                                                onClick={() => checkIn(episode)}
-                                                disabled={isBefore(new Date(), new Date(episode.air_date))}
-                                            >
-                                                Check-in
-                                            </Button>
-                                        )}
-                                    </CardActions>
-                                </Card>
-                            </Grid>
+                            <EpisodeItem
+                                episode={episode}
+                                addedShowIds={addedShowIds}
+                                checkIn={checkIn}
+                                key={episode.id}
+                            />
                         )
                     })}
-            </Grid>
+            </List>
             <Snackbar
                 open={!!error}
                 message={error}
-                autoHideDuration={6000}
+                autoHideDuration={3000}
                 anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                 onClose={() => setError(null)}
             />

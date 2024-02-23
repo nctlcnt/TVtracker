@@ -5,7 +5,7 @@ import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 export default () => {
     useAuthCheck()
     return (
-        <Box p={2}>
+        <Box>
             <Stack direction={'row'} gap={2}>
                 <Link to={'/'}>Home</Link>
                 <Link to={'/settings'}>Settings</Link>

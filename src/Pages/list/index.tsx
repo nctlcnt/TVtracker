@@ -1,20 +1,18 @@
 import React, { useEffect } from 'react'
 import { Backdrop, Box, Button, Chip, CircularProgress, Divider, Stack } from '@mui/material'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
-import { Link, useNavigate } from 'react-router-dom'
-import ShowListItem from '@/Pages/List/ShowListItem.tsx'
+import ShowListItem from '@/Pages/list/ShowListItem.tsx'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
-import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
-import { getShows } from '@/apis/mongodbAPI.ts'
+import { dbShowsRequest } from '@/apis/mongodbAPI.ts'
+import { ShowListItemRecord } from '@/common/types/mongo'
 
 export default () => {
-    const { tokens, showData, readCookies, setShowData, userId, userSettings } = React.useContext(GlobalContext)
-    const { TMDBToken } = tokens
+    const { showData, readCookies, setShowData, userId, userSettings } = React.useContext(GlobalContext)
     console.log(userSettings)
 
     const requestShowList = () =>
-        axios.get(getShows, {
+        axios.get(dbShowsRequest, {
             params: {
                 createdBy: userId,
             },
@@ -24,7 +22,7 @@ export default () => {
         manual: true,
         onSuccess: ({ data }) => {
             console.log('getShowList', data)
-            setShowData(data as ShowType[])
+            setShowData(data as ShowListItemRecord[])
         },
     })
 
@@ -35,18 +33,11 @@ export default () => {
         }
     }, [])
 
-    const statusChips = userSettings.userDefinedStatus
+    const statusChips = userSettings.userDefinedStatus || []
     const [filterChips, setFilterChips] = React.useState<string[]>(['Watching', 'In List'])
-    const navigate = useNavigate()
-
-    if (!TMDBToken || !userSettings._id) {
-        navigate('/')
-        return
-    }
 
     return (
         <div>
-            <Link to={'/'}>Go Back</Link>
             <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
                 <CircularProgress color="inherit" />
             </Backdrop>
@@ -106,8 +97,8 @@ export default () => {
                 {showData &&
                     showData.length > 0 &&
                     showData
-                        .filter((item: ShowType) => filterChips.includes(item.status))
-                        .map((item: ShowType) => {
+                        .filter((item: ShowListItemRecord) => filterChips.includes(item.status))
+                        .map((item: ShowListItemRecord) => {
                             return <ShowListItem key={item._id} show={item} />
                         })}
             </Stack>

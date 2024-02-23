@@ -1,10 +1,21 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Avatar, Box, Chip, Paper, Typography } from '@mui/material'
-import { formatDistanceToNow } from 'date-fns'
-import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
+import { formatDate, formatDistanceToNow } from 'date-fns'
+import React from 'react'
+import GlobalContext from '@/globalContext/GlobalContext.ts'
+import { ShowListItemRecord } from '@/common/types/mongo'
 
-const ShowListItem = ({ show }: { show: ShowType }) => {
+const ShowListItem = ({ show }: { show: ShowListItemRecord }) => {
     const navigate = useNavigate()
+    const {
+        tokens: { TMDBToken },
+    } = React.useContext(GlobalContext)
+    const handleClick = () => {
+        if (!TMDBToken) {
+            navigate(`/tracker`)
+        }
+        navigate(`/show/${show.showId}`)
+    }
     return (
         <Paper sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box>
@@ -13,20 +24,18 @@ const ShowListItem = ({ show }: { show: ShowType }) => {
                     alt={show.showTitle || ''}
                     src={`https://image.tmdb.org/t/p/w500${show.posterPath}`}
                     style={{ width: 130, height: 130 }}
-                    onClick={() => {
-                        navigate(`/show/${show.showId}`)
-                    }}
+                    onClick={handleClick}
                 />
             </Box>
             <Box display={'flex'} flexDirection={'column'} flexGrow={1} p={1} maxHeight={130}>
                 <Box textAlign={'left'} flexGrow={1}>
-                    <Link to={`/show/${show.showId}`}>{show.showTitle}</Link>
-                    {/*{show.LastWatched && (*/}
-                    {/*    <Typography variant={'body1'}>*/}
-                    {/*        {show.status === 'Watched' ? <b>Finished at: </b> : <b>Last Watched: </b>}*/}
-                    {/*        {formatDate(new Date(show.LastWatched), 'yyyy-MM-dd')}*/}
-                    {/*    </Typography>*/}
-                    {/*)}*/}
+                    <Typography>{show.showTitle}</Typography>
+                    {show.latestProgress?.[0]?.watchedAt && (
+                        <Typography variant={'body1'}>
+                            {show.status === 'Watched' ? <b>Finished at: </b> : <b>Last Watched: </b>}
+                            {formatDate(new Date(show.latestProgress[0].watchedAt), 'yyyy-MM-dd')}
+                        </Typography>
+                    )}
                     {!['Watching', 'Watched', 'Paused', 'Dropped'].includes(show.status) && (
                         <Typography>
                             <b>In list from: </b> {formatDistanceToNow(new Date(show.created), { addSuffix: true })}

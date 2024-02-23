@@ -1,8 +1,9 @@
 import useSettings from '@/Pages/settings/useSettings.ts'
-import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, Typography } from '@mui/material'
 import { UserSettingsType } from '@/globalContext/useInit.ts'
-import { Link } from 'react-router-dom'
 import PaperInput from '@/common/Components/PaperInput.tsx'
+import React from 'react'
+import GlobalContext from '@/globalContext/GlobalContext.ts'
 
 const Settings = () => {
     const {
@@ -21,11 +22,22 @@ const Settings = () => {
         userDefinedStatus,
         userDefinedProviders,
     } as { [key: string]: string[] }
+    const { tokens, setTokens } = React.useContext(GlobalContext)
 
     return (
         <div>
             <h1>Settings: {name ? name : 'no user'}</h1>
-            <Link to={'/'}>To Landing</Link>
+            <PaperInput
+                onSubmit={(value) => {
+                    // set cookies
+                    document.cookie = `TMDBToken=${value};max-age=31536000;`
+                    setTokens({ ...tokens, 'TMDBToken': value as string })
+                }}
+                placeholder={'TMDB Token'}
+            />
+            <Typography width={1} sx={{ overflowWrap: 'anywhere' }}>
+                {tokens.TMDBToken}
+            </Typography>
             {Object.keys(settingList).map((item: string) => {
                 return (
                     <Accordion key={item} expanded={expanded === item} onChange={handleChange(item)}>
