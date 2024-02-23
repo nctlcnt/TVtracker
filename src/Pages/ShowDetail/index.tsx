@@ -7,9 +7,9 @@ import SeasonViewer from '@/Pages/ShowDetail/SeasonViewer.tsx'
 import { getTvShowDetails } from '@/apis/tmdbAPI.ts'
 import { APIShowDetailType } from '@/common/types/tmdb'
 import { ShowListItemRecord } from '@/common/types/mongo'
-import tmdb from '@/common/tmdbRequest.ts'
 import { formatDate } from 'date-fns'
 import { useAuthCheck } from '@/common/useAuthCheck.tsx'
+import useAxios from '@/common/tmdbRequest.ts'
 
 export default () => {
     useAuthCheck()
@@ -18,11 +18,12 @@ export default () => {
     const [seasonId, setSeasonId] = React.useState<string | null>(null)
     const [showDetail, setShowDetail] = React.useState<APIShowDetailType | null>(null)
     const [show] = React.useState<ShowListItemRecord>(showData.filter((show) => String(show.showId) === id)[0])
+    const axios = useAxios()
 
     console.log(showData, id, show)
     const requestShowDetails = async () => {
         const requestUrl = getTvShowDetails.replace('{series_id}', id || '')
-        return tmdb.get(requestUrl, {
+        return axios.get(requestUrl, {
             params: {
                 language: 'zh-CN',
             },
