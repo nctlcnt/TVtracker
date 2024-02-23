@@ -2,54 +2,36 @@ import axios from 'axios'
 import { useRequest } from 'ahooks'
 import React, { useState } from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
-import { ShowDetailType, TMDBResults } from '@/common/tmdbTypes'
-import { ProviderRecords } from '@/common/types'
+import { ProviderRecords } from '@/common/types/types'
 import { searchProviders, searchTvShows } from '@/apis/tmdbAPI.ts'
-import { getShows } from '@/apis/mongodbAPI.ts'
-
-export type RequestShowType = {
-    showId: number
-    status: string
-    showTitle: string
-    availableAt: string[]
-    watchingAt: string[]
-    posterPath: string
-    firstAired: string
-    originalTitle: string
-    createdBy: string
-    created: string
-}
-
-export type ShowType = RequestShowType & {
-    _id: string
-}
+import { dbShowsRequest } from '@/apis/mongodbAPI.ts'
+import { APIShowDetailType, APIShowListItemType } from '@/common/types/tmdb'
+import { ShowEntry } from '@/common/types/mongo'
+import tmdb from '@/common/tmdbRequest.ts'
 
 const useSearchShowsService = () => {
-    const [result, setResult] = useState<TMDBResults>([] as TMDBResults)
+    const [result, setResult] = useState<APIShowListItemType[]>([])
     const {
         tokens,
         userSettings: { preferredRegions },
         userId,
     } = React.useContext(GlobalContext)
     const { TMDBToken } = tokens
-    const [addedShows, setAddedShows] = useState<number[]>([] as number[])
+    const [addedShows] = useState<number[]>([] as number[])
 
     const [providerResults, setProviderResults] = useState<ProviderRecords>([] as any)
     const requestSearchShows = (queryString: string) =>
-        axios.get(searchTvShows, {
+        tmdb.get(searchTvShows, {
             params: {
                 query: queryString,
                 language: 'zh-CN',
             },
-            headers: {
-                Authorization: `Bearer ${TMDBToken}`,
-            },
         })
     const { run: searchTvShow, loading } = useRequest(requestSearchShows, {
         manual: true,
-        onSuccess: (result) => {
+        onSuccess: (result: any) => {
             console.log('result', result.data.results)
-            setResult(result.data.results)
+            setResult(result.data.results as APIShowListItemType[])
         },
     })
 
@@ -75,23 +57,8 @@ const useSearchShowsService = () => {
         },
     })
 
-    const requestShowList = () =>
-        axios.get(getShows, {
-            params: {
-                createdBy: userId,
-            },
-        })
-
-    const { run: getShowList } = useRequest(requestShowList, {
-        manual: true,
-        onSuccess: ({ data }) => {
-            console.log('getShowList', data)
-            setAddedShows(data.map((item: ShowType) => item.showId))
-        },
-    })
-
-    const postShow = (item: ShowDetailType) =>
-        axios.post(getShows, {
+    const postShow = (item: APIShowDetailType) =>
+        axios.post(dbShowsRequest, {
             showId: item.id,
             status: 'In List',
             showTitle: item.name,
@@ -102,15 +69,12 @@ const useSearchShowsService = () => {
             originalTitle: item.original_name,
             createdBy: userId,
             created: new Date().toISOString(),
-        } as RequestShowType)
+        } as ShowEntry)
 
     const { run: addShow, loading: addingShow } = useRequest(postShow, {
         manual: true,
         onSuccess: (data) => {
             console.log('addShow success', data)
-            if (data.status === 200) {
-                getShowList()
-            }
         },
     })
 

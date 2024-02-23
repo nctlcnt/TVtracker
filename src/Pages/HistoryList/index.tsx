@@ -6,41 +6,26 @@ import { formatDate } from 'date-fns'
 import axios from 'axios'
 import { useRequest } from 'ahooks'
 import { HighlightOffRounded } from '@mui/icons-material'
-import { getProgressUrl } from '@/apis/mongodbAPI.ts'
-
-export type HistoryRequestProps = {
-    showId: number
-    episodeId: number
-    episodeSeason: number
-    episodeNumber: number
-    episodeTitle: string
-    watchedAt: string
-    runtime: number
-    aired: string
-    createdBy: string
-}
-export type HistoryItemProps = {
-    _id: string
-} & HistoryRequestProps
+import { deleteHistoryEntry, dbHistoryRequest } from '@/apis/mongodbAPI.ts'
+import { HistoryItemRecord } from '@/common/types/mongo'
 
 const HistoryList = () => {
     const { tokens, readCookies, historyData, setHistoryData } = React.useContext(GlobalContext)
-    const { airtableToken, airtableBaseId, TMDBToken } = tokens
+    const { TMDBToken } = tokens
 
-    const requestProgressData = () => axios.get(getProgressUrl)
+    const requestProgressData = () => axios.get(dbHistoryRequest)
     const { run: getProgress, loading: gettingProgress } = useRequest(requestProgressData, {
         manual: true,
         onSuccess: ({ data }) => {
             console.log('getProgress', data)
-            setHistoryData(data as HistoryItemProps[])
+            setHistoryData(data as HistoryItemRecord[])
         },
     })
     useEffect(() => {
         readCookies()
-        if (!airtableToken || !airtableBaseId || !TMDBToken) {
+        if (!TMDBToken) {
             redirect('/')
         }
-        console.log(airtableToken, airtableBaseId, TMDBToken)
         if (!historyData?.length) {
             refresh()
         }
@@ -56,29 +41,15 @@ const HistoryList = () => {
         return '#' + n.slice(2, 8)
     }
 
-    // const deleteRecordRequest = async (recordId: string) => {
-    //     const requestUrl = `https://api.airtable.com/v0/${airtableBaseId}/episode_tracker`
-    //     return axios.delete(requestUrl, {
-    //         params: {
-    //             records: [recordId],
-    //         },
-    //         headers: {
-    //             Authorization: `Bearer ${airtableToken}`,
-    //         },
-    //     })
-    // }
-    //
-    // const { run: deleteRecord } = useRequest(deleteRecordRequest, {
-    //     manual: true,
-    //     onSuccess: (data) => {
-    //         console.log('deleteRecord', data)
-    //         refresh()
-    //     },
-    // })
+    const deleteRecordRequest = async (recordId: string) => axios.delete(deleteHistoryEntry.replace('{_id}', recordId))
 
-    const deleteRecord = (recordId: string) => {
-        console.log('deleteRecord', recordId)
-    }
+    const { run: deleteRecord } = useRequest(deleteRecordRequest, {
+        manual: true,
+        onSuccess: (data) => {
+            console.log('deleteRecord', data)
+            refresh()
+        },
+    })
 
     return (
         <Box>
@@ -113,8 +84,8 @@ const HistoryList = () => {
                                             mx: 1,
                                         }}
                                     />
-                                    <Box textAlign={'left'}>
-                                        <Typography variant={'caption'}>{item.showId}</Typography>
+                                    <Box textAlign={'left'} flexGrow={1}>
+                                        <Typography variant={'caption'}>{item.showDetails[0]?.showTitle}</Typography>
                                         <Typography>
                                             {item.episodeTitle ? item.episodeTitle : item.episodeNumber}
                                         </Typography>

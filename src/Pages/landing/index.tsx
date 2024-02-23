@@ -1,43 +1,29 @@
-import useInit from '@/Pages/landing/useInit.ts'
-import { Backdrop, Button, CircularProgress, Typography } from '@mui/material'
-import { CheckRounded } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { Backdrop, CircularProgress, Typography } from '@mui/material'
+import PaperInput from '@/common/Components/PaperInput.tsx'
+import React from 'react'
+import GlobalContext from '@/globalContext/GlobalContext.ts'
 
 const LandingPage = () => {
-    const { userList, userId, gettingUserList, userSettings, gettingUserSettings, setUserId, getUserList } = useInit()
+    const { gettingUserSettings, userSettings, setUserId, userId } = React.useContext(GlobalContext)
 
     return (
         <div>
-            <Backdrop open={gettingUserList || gettingUserSettings}>
+            <Backdrop open={gettingUserSettings}>
                 <CircularProgress />
             </Backdrop>
             {userSettings._id && (
                 <div>
                     <Typography variant={'subtitle1'}>Current User: {userSettings.name}</Typography>
-                    <Link to={'/settings'}>To Settings</Link>
-                    <Link to={'/tracker'}>To Tracker</Link>
-                    <Link to={'/list'}>To List</Link>
-                    <Link to={'/history'}>To History</Link>
                 </div>
             )}
-            {!userSettings._id && (
-                <Button onClick={getUserList} disabled={gettingUserList || gettingUserSettings}>
-                    Get User List
-                </Button>
+            {!userId && (
+                <PaperInput
+                    onSubmit={(value) => {
+                        document.cookie = `userId=${value};max-age=31536000;`
+                        setUserId(value as string)
+                    }}
+                />
             )}
-            {userList.length > 0 &&
-                userList.map((item) => {
-                    return (
-                        <div key={item._id}>
-                            {item.name}{' '}
-                            {item._id !== userId ? (
-                                <Button onClick={() => setUserId(item._id)}>select</Button>
-                            ) : (
-                                <CheckRounded color={'success'} />
-                            )}
-                        </div>
-                    )
-                })}
         </div>
     )
 }

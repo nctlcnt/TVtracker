@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { TokensType } from '@/common/types'
+import { TokensType } from '@/common/types/types'
 import useInit from '@/globalContext/useInit.ts'
-import { ShowType } from '@/Pages/search/SearchShows/useSearchShowsService.ts'
-import { HistoryItemProps } from '@/Pages/HistoryList'
+import { HistoryItemRecord, ShowListItemRecord } from '@/common/types/mongo'
 
-export const getTokensFromCookies = () => {
+export const getTokensFromCookies = (): TokensType => {
     const TMDBToken = document.cookie.match(/TMDBToken=([^;]+)/)?.[1] || ''
     return { TMDBToken }
 }
@@ -12,11 +11,10 @@ export const getTokensFromCookies = () => {
 const useGlobalContext = () => {
     const initData = useInit()
     const [tokens, setTokens] = useState<TokensType>({} as TokensType)
-    const [showData, setShowData] = useState<ShowType[]>([])
-    const [historyData, setHistoryData] = useState<HistoryItemProps[]>([])
+    const [showData, setShowData] = useState<ShowListItemRecord[]>([])
+    const [historyData, setHistoryData] = useState<HistoryItemRecord[]>([])
     const readCookies = () => {
-        console.log('readCookies', document.cookie)
-        setTokens(getTokensFromCookies() as TokensType)
+        setTokens(getTokensFromCookies())
     }
 
     useEffect(() => {

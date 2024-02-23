@@ -1,4 +1,4 @@
-import { ProviderRecords } from '@/common/types'
+import { ProviderRecords } from '@/common/types/types'
 import { Box, Divider, Stack, Typography } from '@mui/material'
 
 const ProviderList = ({ preferredRegions, providers }: { preferredRegions: string[]; providers: ProviderRecords }) => {

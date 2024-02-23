@@ -4,7 +4,7 @@ import { UserSettingsType } from '@/globalContext/useInit.ts'
 import axios from 'axios'
 
 import { useRequest } from 'ahooks'
-import { getUserInfo } from '@/apis/mongodbAPI.ts'
+import { userInfoRequest } from '@/apis/mongodbAPI.ts'
 
 type SettingsDataType = {
     addSettingOption: (settingType: keyof UserSettingsType) => (newItem: string) => void
@@ -23,7 +23,7 @@ const useSettings = (): SettingsDataType => {
     const [addingItem, setAddingItem] = React.useState<string | false>(false)
 
     const postUserSettings = (newSettings: { [key: string]: string[] }) =>
-        axios.post(getUserInfo.replace('{userId}', userId), newSettings)
+        axios.post(userInfoRequest.replace('{userId}', userId), newSettings)
     const { run: updateUserSettings, loading: updatingUserSettings } = useRequest(postUserSettings, {
         manual: true,
         onSuccess: ({ data }) => {
