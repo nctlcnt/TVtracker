@@ -60,6 +60,11 @@ export const apiRequest = async <T = any>(config: AxiosRequestConfig): Promise<A
 
 const tmdb: any = {}
 tmdb.get = async (url: string, config: AxiosRequestConfig) => {
+    const token =
+        document?.cookie
+            ?.split(';')
+            .filter((item) => item.includes('TMDBToken'))[0]
+            ?.split('=')[1] || ''
     if (!token) {
         return Promise.reject('No token')
     }

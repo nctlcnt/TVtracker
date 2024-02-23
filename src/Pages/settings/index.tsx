@@ -4,8 +4,10 @@ import { UserSettingsType } from '@/globalContext/useInit.ts'
 import PaperInput from '@/common/Components/PaperInput.tsx'
 import React from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 const Settings = () => {
+    useAuthCheck()
     const {
         userSettings,
         setEditingItem,

@@ -9,8 +9,10 @@ import { APIShowDetailType } from '@/common/types/tmdb'
 import { ShowListItemRecord } from '@/common/types/mongo'
 import tmdb from '@/common/tmdbRequest.ts'
 import { formatDate } from 'date-fns'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 export default () => {
+    useAuthCheck()
     const { id } = useParams()
     const { showData } = React.useContext(GlobalContext)
     const [seasonId, setSeasonId] = React.useState<string | null>(null)
