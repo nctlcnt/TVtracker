@@ -4,7 +4,7 @@ import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { ProviderRecords } from '@/common/types/types'
 import { searchProviders, searchTvShows } from '@/apis/tmdbAPI.ts'
 import { dbShowsRequest } from '@/apis/mongodbAPI.ts'
-import { APIShowDetailType, APIShowListItemType } from '@/common/types/tmdb'
+import { APIShowListItemType } from '@/common/types/tmdb'
 import { ShowEntry } from '@/common/types/mongo'
 import useAxios from '@/common/tmdbRequest.ts'
 
@@ -16,7 +16,8 @@ const useSearchShowsService = () => {
         userId,
     } = React.useContext(GlobalContext)
     const { TMDBToken } = tokens
-    const [addedShows] = useState<number[]>([] as number[])
+    const [addedShows, setAddedShows] = useState<number[]>([] as number[])
+
     const axios = useAxios()
 
     const [providerResults, setProviderResults] = useState<ProviderRecords>([] as any)
@@ -57,8 +58,9 @@ const useSearchShowsService = () => {
         },
     })
 
-    const postShow = (item: APIShowDetailType) =>
-        axios.post(dbShowsRequest, {
+    const postShow = (item: APIShowListItemType) => {
+        setAddedShows([...addedShows, item.id])
+        return axios.post(dbShowsRequest, {
             showId: item.id,
             status: 'In List',
             showTitle: item.name,
@@ -70,11 +72,17 @@ const useSearchShowsService = () => {
             createdBy: userId,
             created: new Date().toISOString(),
         } as ShowEntry)
+    }
 
     const { run: addShow, loading: addingShow } = useRequest(postShow, {
         manual: true,
         onSuccess: (data) => {
             console.log('addShow success', data)
+        },
+        onError: () => {
+            const temp = addedShows
+            temp.pop()
+            setAddedShows(temp)
         },
     })
 

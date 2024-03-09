@@ -7,7 +7,7 @@ export default () => {
             <Stack direction={'row'} gap={2}>
                 <Link to={'/'}>Home</Link>
                 <Link to={'/settings'}>Settings</Link>
-                <Link to={'/tracker'}>Tracker</Link>
+                <Link to={'/tracker'}>Search</Link>
                 <Link to={'/list'}>List</Link>
                 <Link to={'/history'}>History</Link>
             </Stack>

@@ -27,6 +27,7 @@ const LandingPage = () => {
                     }}
                 />
             )}
+            {userId && !userSettings._id && <Typography variant={'subtitle1'}>User not found</Typography>}
         </div>
     )
 }
