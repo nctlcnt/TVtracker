@@ -17,6 +17,7 @@ const useSearchShowsService = () => {
     } = React.useContext(GlobalContext)
     const { TMDBToken } = tokens
     const [addedShows, setAddedShows] = useState<number[]>([] as number[])
+
     const axios = useAxios()
 
     const [providerResults, setProviderResults] = useState<ProviderRecords>([] as any)

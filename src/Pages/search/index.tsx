@@ -7,6 +7,7 @@ import { APIShowListItemType } from '@/common/types/tmdb'
 export default function () {
     useAuthCheck()
     const { loading, search, result, addShow, addingShow, addedShows } = useSearchShowsService()
+
     return (
         <div>
             <Paper sx={{ display: 'flex', p: 1 }}>
