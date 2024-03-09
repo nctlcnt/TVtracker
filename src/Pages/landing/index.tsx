@@ -2,8 +2,11 @@ import { Backdrop, CircularProgress, Typography } from '@mui/material'
 import PaperInput from '@/common/Components/PaperInput.tsx'
 import React from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 const LandingPage = () => {
+    useAuthCheck()
+
     const { gettingUserSettings, userSettings, setUserId, userId } = React.useContext(GlobalContext)
 
     return (
@@ -24,6 +27,7 @@ const LandingPage = () => {
                     }}
                 />
             )}
+            {userId && !userSettings._id && <Typography variant={'subtitle1'}>User not found</Typography>}
         </div>
     )
 }

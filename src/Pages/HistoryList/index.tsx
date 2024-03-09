@@ -8,8 +8,10 @@ import { useRequest } from 'ahooks'
 import { HighlightOffRounded } from '@mui/icons-material'
 import { deleteHistoryEntry, dbHistoryRequest } from '@/apis/mongodbAPI.ts'
 import { HistoryItemRecord } from '@/common/types/mongo'
+import { useAuthCheck } from '@/common/useAuthCheck.tsx'
 
 const HistoryList = () => {
+    useAuthCheck()
     const { tokens, readCookies, historyData, setHistoryData } = React.useContext(GlobalContext)
     const { TMDBToken } = tokens
 

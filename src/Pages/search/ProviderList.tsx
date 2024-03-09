@@ -3,7 +3,7 @@ import { Box, Divider, Stack, Typography } from '@mui/material'
 
 const ProviderList = ({ preferredRegions, providers }: { preferredRegions: string[]; providers: ProviderRecords }) => {
     return (
-        <Box>
+        <>
             <p>Provider List</p>
             {preferredRegions?.map((country) => (
                 <Box key={country}>
@@ -43,7 +43,7 @@ const ProviderList = ({ preferredRegions, providers }: { preferredRegions: strin
                     <Divider />
                 </Box>
             ))}
-        </Box>
+        </>
     )
 }
 export default ProviderList
