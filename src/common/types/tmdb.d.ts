@@ -34,6 +34,7 @@ export type APISeasonInfoType = {
 }
 
 export type APIShowDetailType = {
+    last_episode_to_air: {}
     adult: boolean
     backdrop_path: string
     id: number
