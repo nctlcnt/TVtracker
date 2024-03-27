@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, IconButton, List, Snackbar, Typography } from '@mui/material'
+import { Box, CircularProgress, List, Snackbar } from '@mui/material'
 import React, { Dispatch, useEffect } from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import axios from 'axios'
@@ -6,14 +6,11 @@ import { useRequest } from 'ahooks'
 import { getSeasonDetails } from '@/apis/tmdbAPI.ts'
 import { dbHistoryRequest } from '@/apis/mongodbAPI.ts'
 import EpisodeItem from '@/Pages/ShowDetail/EpisodeItem.tsx'
-import { Link } from 'react-router-dom'
-import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded'
 import { APISeasonInfoType, APIEpisodeInfoType } from '@/common/types/tmdb'
 import { ProgressHistoryEntry } from '@/common/types/mongo'
 
 export default ({
     seasonId,
-    setSeasonId,
     showId,
 }: {
     seasonId: string | null
@@ -21,9 +18,7 @@ export default ({
     showId?: string
 }) => {
     const { tokens, userId } = React.useContext(GlobalContext)
-    if (!userId) {
-        return <Link to={'/'}>Go Back</Link>
-    }
+
     const { TMDBToken } = tokens
     const requestSeasonUrl = getSeasonDetails
         .replace('{series_id}', showId || '')
@@ -83,26 +78,12 @@ export default ({
     }
 
     useEffect(() => {
-        console.log('seasonId', seasonId)
         getSeason()
-    }, [])
+    }, [seasonId])
 
     return (
-        <Box p={2}>
-            <Backdrop open={addingShowId !== null || loading} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <CircularProgress />
-            </Backdrop>
-            <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                {seasonDetail && (
-                    <Typography display={'inline-block'}>
-                        {seasonDetail?.name || ''} ({seasonDetail?.air_date || ''})
-                    </Typography>
-                )}
-                <IconButton onClick={() => setSeasonId && setSeasonId(null)}>
-                    <HighlightOffRoundedIcon color={'error'} />
-                </IconButton>
-            </Box>
-
+        <Box>
+            {(addingShowId !== null || loading) && <CircularProgress />}
             <List>
                 {seasonDetail &&
                     seasonDetail.episodes.map((episode: APIEpisodeInfoType) => {

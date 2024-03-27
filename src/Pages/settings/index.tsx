@@ -1,5 +1,13 @@
 import useSettings from '@/Pages/settings/useSettings.ts'
-import { Accordion, AccordionDetails, AccordionSummary, Button, CircularProgress, Typography } from '@mui/material'
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Backdrop,
+    Button,
+    CircularProgress,
+    Typography,
+} from '@mui/material'
 import { UserSettingsType } from '@/globalContext/useInit.ts'
 import PaperInput from '@/common/Components/PaperInput.tsx'
 import React from 'react'
@@ -24,10 +32,13 @@ const Settings = () => {
         userDefinedStatus,
         userDefinedProviders,
     } as { [key: string]: string[] }
-    const { tokens, setTokens } = React.useContext(GlobalContext)
+    const { tokens, setTokens, gettingUserSettings, setUserId, userId } = React.useContext(GlobalContext)
 
     return (
         <div>
+            <Backdrop open={gettingUserSettings}>
+                <CircularProgress />
+            </Backdrop>
             <h1>Settings: {name ? name : 'no user'}</h1>
             <PaperInput
                 onSubmit={(value) => {
@@ -37,6 +48,16 @@ const Settings = () => {
                 }}
                 placeholder={'TMDB Token'}
             />
+            {!userId && (
+                <PaperInput
+                    onSubmit={(value) => {
+                        document.cookie = `userId=${value};max-age=31536000;`
+                        setUserId(value as string)
+                    }}
+                />
+            )}
+            {userId && !userSettings._id && <Typography variant={'subtitle1'}>User not found</Typography>}
+
             <Typography width={1} sx={{ overflowWrap: 'anywhere' }}>
                 {tokens.TMDBToken}
             </Typography>
