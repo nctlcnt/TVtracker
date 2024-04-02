@@ -1,64 +1,15 @@
-import React, { useEffect } from 'react'
-import { Backdrop, Box, Button, CircularProgress, Divider, IconButton, Stack, Typography } from '@mui/material'
-import { Link, redirect } from 'react-router-dom'
-import GlobalContext from '@/globalContext/GlobalContext.ts'
+import { Backdrop, Box, CircularProgress, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { formatDate } from 'date-fns'
-import axios from 'axios'
-import { useRequest } from 'ahooks'
 import { HighlightOffRounded } from '@mui/icons-material'
-import { deleteHistoryEntry, dbHistoryRequest } from '@/apis/mongodbAPI.ts'
-import { HistoryItemRecord } from '@/common/types/mongo'
 import { useAuthCheck } from '@/common/useAuthCheck.tsx'
+import useHistory from '@/Pages/landing/useHistory.ts'
 
-const HistoryList = () => {
+const HistoryList = ({ isPreview }: { isPreview?: boolean }) => {
     useAuthCheck()
-    const { tokens, readCookies, historyData, setHistoryData } = React.useContext(GlobalContext)
-    const { TMDBToken } = tokens
-
-    const requestProgressData = () => axios.get(dbHistoryRequest)
-    const { run: getProgress, loading: gettingProgress } = useRequest(requestProgressData, {
-        manual: true,
-        onSuccess: ({ data }) => {
-            console.log('getProgress', data)
-            setHistoryData(data as HistoryItemRecord[])
-        },
-    })
-    useEffect(() => {
-        readCookies()
-        if (!TMDBToken) {
-            redirect('/')
-        }
-        if (!historyData?.length) {
-            refresh()
-        }
-    }, [])
-
-    const refresh = () => {
-        getProgress()
-    }
-    const randomHexColorCode = (seed: number) => {
-        let randomNumber = seed ? Number('0.' + seed.toString()) : Math.random()
-        let n = (randomNumber * 0xfffff * 1000000).toString(16)
-        // console.log(n)
-        return '#' + n.slice(2, 8)
-    }
-
-    const deleteRecordRequest = async (recordId: string) => axios.delete(deleteHistoryEntry.replace('{_id}', recordId))
-
-    const { run: deleteRecord } = useRequest(deleteRecordRequest, {
-        manual: true,
-        onSuccess: (data) => {
-            console.log('deleteRecord', data)
-            refresh()
-        },
-    })
+    const { historyData, deleteRecord, randomHexColorCode, gettingProgress } = useHistory()
 
     return (
         <Box>
-            <Typography variant={'h3'}>History</Typography>
-            <Link to={'/'}>Go Back</Link>
-            <Divider />
-            <Button onClick={refresh}>Refresh</Button>
             <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={gettingProgress}>
                 <CircularProgress color="inherit" />
             </Backdrop>
@@ -92,14 +43,16 @@ const HistoryList = () => {
                                             {item.episodeTitle ? item.episodeTitle : item.episodeNumber}
                                         </Typography>
                                     </Box>
-                                    <IconButton
-                                        sx={{ ml: 1 }}
-                                        onClick={() => {
-                                            deleteRecord(item._id)
-                                        }}
-                                    >
-                                        <HighlightOffRounded />
-                                    </IconButton>
+                                    {!isPreview && (
+                                        <IconButton
+                                            sx={{ ml: 1 }}
+                                            onClick={() => {
+                                                deleteRecord(item._id)
+                                            }}
+                                        >
+                                            <HighlightOffRounded />
+                                        </IconButton>
+                                    )}
                                 </Stack>
                             </Box>
                         )

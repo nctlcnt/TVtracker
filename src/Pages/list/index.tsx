@@ -44,7 +44,7 @@ export default () => {
             <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Box flexDirection={'row'} display={'flex'}>
+            <Box flexDirection={'row'} display={'flex'} my={4} alignItems={'center'}>
                 <Stack spacing={1} direction={'row'}>
                     {statusChips
                         .filter((chip) => !filterChips.includes(chip))
@@ -86,17 +86,17 @@ export default () => {
                         )
                     })}
                 </Stack>
+                <Button
+                    onClick={() => {
+                        getShowList()
+                    }}
+                    variant={'text'}
+                    sx={{ m: 1 }}
+                >
+                    refresh
+                </Button>
             </Box>
-            <Button
-                onClick={() => {
-                    getShowList()
-                }}
-                variant={'outlined'}
-                sx={{ m: 1 }}
-            >
-                refresh
-            </Button>
-            <Stack spacing={1}>
+            <Stack spacing={1} direction={'row'}>
                 {showData &&
                     showData.length > 0 &&
                     showData

@@ -34,11 +34,11 @@ const router = createBrowserRouter([
                 path: 'history',
                 element: <HistoryList />,
             },
+            {
+                path: 'show/:id',
+                element: <ShowDetail />,
+            },
         ],
-    },
-    {
-        path: 'show/:id',
-        element: <ShowDetail />,
     },
 ])
 export default () => <RouterProvider router={router} />

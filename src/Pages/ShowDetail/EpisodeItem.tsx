@@ -1,4 +1,4 @@
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { Avatar, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { isBefore } from 'date-fns'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import RadioButtonCheckedRoundedIcon from '@mui/icons-material/RadioButtonCheckedRounded'
@@ -16,6 +16,14 @@ const EpisodeItem = ({
     return (
         <ListItem key={episode.id} disablePadding>
             <ListItemButton role={undefined} onClick={() => checkIn(episode)} dense>
+                <ListItemAvatar>
+                    <Avatar variant={'square'} src={`https://image.tmdb.org/t/p/w500${episode.still_path}`} />
+                </ListItemAvatar>
+                <ListItemText
+                    id={String(episode.id)}
+                    primary={episode.name + ' ' + episode.runtime + 'min'}
+                    secondary={episode.air_date + ' ' + episode.overview}
+                />
                 <ListItemIcon>
                     {addedShowIds.includes(episode.id) ? (
                         <RadioButtonCheckedRoundedIcon color={'success'} />
@@ -25,7 +33,6 @@ const EpisodeItem = ({
                         />
                     )}
                 </ListItemIcon>
-                <ListItemText id={String(episode.id)} primary={episode.name} secondary={episode.air_date} />
             </ListItemButton>
         </ListItem>
     )
