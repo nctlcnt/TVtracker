@@ -29,6 +29,10 @@ import InsertLinkOutlinedIcon from '@mui/icons-material/InsertLinkOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 
+type Country = {
+    iso_3166_1: string
+    name: string
+}
 export default () => {
     useAuthCheck()
     const { id } = useParams()
@@ -196,7 +200,7 @@ export default () => {
                                 </p>
                             )}
                             {showDetail.production_countries &&
-                                showDetail.production_countries.map((country) => {
+                                showDetail.production_countries.map((country: Country) => {
                                     return <p key={country.iso_3166_1}>Country: {country.name}</p>
                                 })}
                         </Box>

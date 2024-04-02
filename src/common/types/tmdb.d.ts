@@ -34,7 +34,14 @@ export type APISeasonInfoType = {
 }
 
 export type APIShowDetailType = {
-    last_episode_to_air: {}
+    last_episode_to_air: {
+        name: string
+        air_date: string
+    }
+    next_episode_to_air: {
+        name: string
+        air_date: string
+    }
     adult: boolean
     backdrop_path: string
     id: number
@@ -51,6 +58,14 @@ export type APIShowDetailType = {
     status: string
     number_of_episodes: number
     number_of_seasons: number
+    production_countries: Array<{
+        iso_3166_1: string
+        name: string
+    }>
+    genres: Array<{
+        id: number
+        name: string
+    }>
 }
 export type APIShowListItemType = {
     adult: boolean
