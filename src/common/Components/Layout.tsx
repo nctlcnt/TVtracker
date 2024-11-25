@@ -12,7 +12,7 @@ export default () => {
     const isHome = useMatch('/')
 
     return (
-        <Box display={'flex'} height={'100vh'}>
+        <Box display={'flex'} height={'100vh'} overflow={'hidden'}>
             <Canvas />
             <Box height={'100%'} display={'flex'}>
                 <Box

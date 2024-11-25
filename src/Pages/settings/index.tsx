@@ -13,6 +13,8 @@ import PaperInput from '@/common/Components/PaperInput.tsx'
 import React from 'react'
 import GlobalContext from '@/globalContext/GlobalContext.ts'
 import { useAuthCheck } from '@/common/useAuthCheck.tsx'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const Settings = () => {
     useAuthCheck()
@@ -42,9 +44,20 @@ const Settings = () => {
             <h1>Settings: {name ? name : 'no user'}</h1>
             <PaperInput
                 onSubmit={(value) => {
-                    // set cookies
-                    document.cookie = `TMDBToken=${value};max-age=31536000;`
-                    setTokens({ ...tokens, 'TMDBToken': value as string })
+                    // validate token
+                    axios
+                        .get('https://api.themoviedb.org/3/authentication', {
+                            headers: {
+                                Authorization: `Bearer ${value}`,
+                            },
+                        })
+                        .then(({ data }) => {
+                            if (data.success) {
+                                // set cookies
+                                document.cookie = `TMDBToken=${value};max-age=31536000;`
+                                setTokens({ ...tokens, 'TMDBToken': value as string })
+                            }
+                        })
                 }}
                 placeholder={'TMDB Token'}
             />
@@ -59,7 +72,16 @@ const Settings = () => {
             {userId && !userSettings._id && <Typography variant={'subtitle1'}>User not found</Typography>}
 
             <Typography width={1} sx={{ overflowWrap: 'anywhere' }}>
-                {tokens.TMDBToken}
+                {!tokens.TMDBToken ? (
+                    <span>
+                        you can get an API token from{' '}
+                        <Link to={'https://www.themoviedb.org/settings/api'} replace={false}>
+                            https://www.themoviedb.org/settings/api
+                        </Link>
+                    </span>
+                ) : (
+                    <span>{tokens.TMDBToken}</span>
+                )}
             </Typography>
             {Object.keys(settingList).map((item: string) => {
                 return (

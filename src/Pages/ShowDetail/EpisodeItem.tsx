@@ -15,14 +15,14 @@ const EpisodeItem = ({
 }) => {
     return (
         <ListItem key={episode.id} disablePadding>
-            <ListItemButton role={undefined} onClick={() => checkIn(episode)} dense>
+            <ListItemButton role={undefined} onClick={() => checkIn(episode)}>
                 <ListItemAvatar>
                     <Avatar variant={'square'} src={`https://image.tmdb.org/t/p/w500${episode.still_path}`} />
                 </ListItemAvatar>
                 <ListItemText
                     id={String(episode.id)}
                     primary={episode.name + ' ' + episode.runtime + 'min'}
-                    secondary={episode.air_date + ' ' + episode.overview}
+                    secondary={episode.air_date + ' ' + episode.overview.substring(0, 50) + '...'}
                 />
                 <ListItemIcon>
                     {addedShowIds.includes(episode.id) ? (

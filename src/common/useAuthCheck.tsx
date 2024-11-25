@@ -12,14 +12,14 @@ export const useAuthCheck = () => {
         setTokens,
     } = React.useContext(GlobalContext)
     const navigate = useNavigate()
-
+    const isInSettings = window.location.pathname === '/settings'
     useEffect(() => {
         if (!TMDBToken && !TMDBTokenFromCookies) {
             navigate('/settings')
         } else if (TMDBTokenFromCookies) {
             setTokens({ 'TMDBToken': TMDBTokenFromCookies })
         }
-        if (!userId && !userIdFromCookies) {
+        if (!userId && !userIdFromCookies && !isInSettings) {
             navigate('/')
         } else if (userIdFromCookies) {
             setUserId(userIdFromCookies)

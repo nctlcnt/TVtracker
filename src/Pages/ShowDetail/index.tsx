@@ -137,12 +137,12 @@ export default () => {
                         </Grid>
                     )}
                 </Grid>
-                <Grid container p={6} pt={14} mt={-10} position={'relative'}>
+                <Grid container p={6} pt={14} mt={-10} position={'relative'} overflow={'hidden'}>
                     <Box
                         bgcolor={'white'}
                         sx={{ opacity: 0.6, height: 1, width: 1, position: 'absolute', zIndex: -1, top: 0, left: 0 }}
                     ></Box>
-                    <Grid item xs={7} px={7}>
+                    <Grid item xs={7} px={1} maxHeight={'60vh'} overflow={'auto'}>
                         <>
                             {showDetail.seasons.map((season) => {
                                 return (
